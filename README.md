@@ -10,6 +10,63 @@ Obsidian plugin that finds semantically related notes using Gemini embeddings.
 - Supports clean and raw embedding profiles for local comparison.
 - Stores the local vector index in the plugin data folder.
 
+## Installation
+
+### Install with BRAT
+
+BRAT is the easiest way to install and keep this plugin updated before it is available in the official Obsidian Community Plugins catalog.
+
+1. In Obsidian, open **Settings → Community plugins → Browse**.
+2. Search for **BRAT**, install it, and enable it.
+3. Open the command palette and run:
+
+```text
+BRAT: Add a beta plugin for testing
+```
+
+4. Paste this repository:
+
+```text
+augustocaruso/related-notes-obsidian
+```
+
+5. Choose the latest release, currently `v0.2.0`.
+6. Open **Settings → Community plugins** and enable **Related Notes (Gemini)**.
+
+### Manual install
+
+1. Download the latest release assets from:
+
+```text
+https://github.com/augustocaruso/related-notes-obsidian/releases/latest
+```
+
+2. Create this folder inside your vault:
+
+```text
+.obsidian/plugins/related-notes-obsidian/
+```
+
+3. Copy these files into that folder:
+
+```text
+main.js
+manifest.json
+styles.css
+```
+
+4. Restart Obsidian or reload plugins, then enable **Related Notes (Gemini)** in **Settings → Community plugins**.
+
+## Setup
+
+1. Open **Settings → Related Notes (Gemini)**.
+2. Add your Gemini API key.
+3. Keep **Default embedding profile** as `Clean v1` unless you are intentionally comparing profiles.
+4. Run **Index missing notes** from the settings tab or command palette.
+5. Open the Related Notes sidebar from the ribbon icon or command palette.
+
+For comparison experiments, enable/store `Raw v1` and run **Index all stored profiles**. Normal indexing and Workbench export use only the default profile.
+
 ## Development
 
 ```bash
