@@ -241,13 +241,14 @@ export class RelatedNotesView extends ItemView {
     titleLine.createSpan({ text: formatScore(note.score), cls: "related-notes-score-text" });
 
     if (note.folder) {
-      const meta = body.createDiv({ cls: "related-notes-row-meta" });
-      meta.createSpan({ text: "·", cls: "related-notes-row-meta-sep" });
-      meta.createSpan({ text: note.folder, cls: "related-notes-row-meta-folder" });
+      body.createDiv({ text: note.folder, cls: "related-notes-row-meta" });
     }
 
     if (note.preview) {
-      body.createDiv({ text: note.preview, cls: "related-notes-row-preview" });
+      const cleaned = note.preview.replace(/^#+\s*/, "").trim();
+      if (cleaned && cleaned.toLowerCase() !== note.title.toLowerCase()) {
+        body.createDiv({ text: cleaned, cls: "related-notes-row-preview" });
+      }
     }
 
     const actions = row.createDiv({ cls: "related-notes-row-actions" });
