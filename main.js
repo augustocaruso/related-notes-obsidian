@@ -35,9 +35,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// ../../../node_modules/crypto-js/core.js
+// node_modules/crypto-js/core.js
 var require_core = __commonJS({
-  "../../../node_modules/crypto-js/core.js"(exports, module2) {
+  "node_modules/crypto-js/core.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory();
@@ -643,9 +643,9 @@ var require_core = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/x64-core.js
+// node_modules/crypto-js/x64-core.js
 var require_x64_core = __commonJS({
-  "../../../node_modules/crypto-js/x64-core.js"(exports, module2) {
+  "node_modules/crypto-js/x64-core.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -900,9 +900,9 @@ var require_x64_core = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/lib-typedarrays.js
+// node_modules/crypto-js/lib-typedarrays.js
 var require_lib_typedarrays = __commonJS({
-  "../../../node_modules/crypto-js/lib-typedarrays.js"(exports, module2) {
+  "node_modules/crypto-js/lib-typedarrays.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -945,9 +945,9 @@ var require_lib_typedarrays = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/enc-utf16.js
+// node_modules/crypto-js/enc-utf16.js
 var require_enc_utf16 = __commonJS({
-  "../../../node_modules/crypto-js/enc-utf16.js"(exports, module2) {
+  "node_modules/crypto-js/enc-utf16.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -1063,9 +1063,9 @@ var require_enc_utf16 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/enc-base64.js
+// node_modules/crypto-js/enc-base64.js
 var require_enc_base64 = __commonJS({
-  "../../../node_modules/crypto-js/enc-base64.js"(exports, module2) {
+  "node_modules/crypto-js/enc-base64.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -1171,9 +1171,9 @@ var require_enc_base64 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/enc-base64url.js
+// node_modules/crypto-js/enc-base64url.js
 var require_enc_base64url = __commonJS({
-  "../../../node_modules/crypto-js/enc-base64url.js"(exports, module2) {
+  "node_modules/crypto-js/enc-base64url.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -1290,9 +1290,9 @@ var require_enc_base64url = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/md5.js
+// node_modules/crypto-js/md5.js
 var require_md5 = __commonJS({
-  "../../../node_modules/crypto-js/md5.js"(exports, module2) {
+  "node_modules/crypto-js/md5.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -1469,9 +1469,9 @@ var require_md5 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/sha1.js
+// node_modules/crypto-js/sha1.js
 var require_sha1 = __commonJS({
-  "../../../node_modules/crypto-js/sha1.js"(exports, module2) {
+  "node_modules/crypto-js/sha1.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -1560,9 +1560,9 @@ var require_sha1 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/sha256.js
+// node_modules/crypto-js/sha256.js
 var require_sha256 = __commonJS({
-  "../../../node_modules/crypto-js/sha256.js"(exports, module2) {
+  "node_modules/crypto-js/sha256.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -1681,9 +1681,9 @@ var require_sha256 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/sha224.js
+// node_modules/crypto-js/sha224.js
 var require_sha224 = __commonJS({
-  "../../../node_modules/crypto-js/sha224.js"(exports, module2) {
+  "node_modules/crypto-js/sha224.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_sha256());
@@ -1726,9 +1726,9 @@ var require_sha224 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/sha512.js
+// node_modules/crypto-js/sha512.js
 var require_sha512 = __commonJS({
-  "../../../node_modules/crypto-js/sha512.js"(exports, module2) {
+  "node_modules/crypto-js/sha512.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_x64_core());
@@ -2008,9 +2008,9 @@ var require_sha512 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/sha384.js
+// node_modules/crypto-js/sha384.js
 var require_sha384 = __commonJS({
-  "../../../node_modules/crypto-js/sha384.js"(exports, module2) {
+  "node_modules/crypto-js/sha384.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_x64_core(), require_sha512());
@@ -2054,9 +2054,9 @@ var require_sha384 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/sha3.js
+// node_modules/crypto-js/sha3.js
 var require_sha3 = __commonJS({
-  "../../../node_modules/crypto-js/sha3.js"(exports, module2) {
+  "node_modules/crypto-js/sha3.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_x64_core());
@@ -2256,9 +2256,9 @@ var require_sha3 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/ripemd160.js
+// node_modules/crypto-js/ripemd160.js
 var require_ripemd160 = __commonJS({
-  "../../../node_modules/crypto-js/ripemd160.js"(exports, module2) {
+  "node_modules/crypto-js/ripemd160.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -2727,9 +2727,9 @@ var require_ripemd160 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/hmac.js
+// node_modules/crypto-js/hmac.js
 var require_hmac = __commonJS({
-  "../../../node_modules/crypto-js/hmac.js"(exports, module2) {
+  "node_modules/crypto-js/hmac.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -2834,9 +2834,9 @@ var require_hmac = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/pbkdf2.js
+// node_modules/crypto-js/pbkdf2.js
 var require_pbkdf2 = __commonJS({
-  "../../../node_modules/crypto-js/pbkdf2.js"(exports, module2) {
+  "node_modules/crypto-js/pbkdf2.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_sha256(), require_hmac());
@@ -2932,9 +2932,9 @@ var require_pbkdf2 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/evpkdf.js
+// node_modules/crypto-js/evpkdf.js
 var require_evpkdf = __commonJS({
-  "../../../node_modules/crypto-js/evpkdf.js"(exports, module2) {
+  "node_modules/crypto-js/evpkdf.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_sha1(), require_hmac());
@@ -3023,9 +3023,9 @@ var require_evpkdf = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/cipher-core.js
+// node_modules/crypto-js/cipher-core.js
 var require_cipher_core = __commonJS({
-  "../../../node_modules/crypto-js/cipher-core.js"(exports, module2) {
+  "node_modules/crypto-js/cipher-core.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_evpkdf());
@@ -3667,9 +3667,9 @@ var require_cipher_core = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/mode-cfb.js
+// node_modules/crypto-js/mode-cfb.js
 var require_mode_cfb = __commonJS({
-  "../../../node_modules/crypto-js/mode-cfb.js"(exports, module2) {
+  "node_modules/crypto-js/mode-cfb.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3719,9 +3719,9 @@ var require_mode_cfb = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/mode-ctr.js
+// node_modules/crypto-js/mode-ctr.js
 var require_mode_ctr = __commonJS({
-  "../../../node_modules/crypto-js/mode-ctr.js"(exports, module2) {
+  "node_modules/crypto-js/mode-ctr.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3759,9 +3759,9 @@ var require_mode_ctr = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/mode-ctr-gladman.js
+// node_modules/crypto-js/mode-ctr-gladman.js
 var require_mode_ctr_gladman = __commonJS({
-  "../../../node_modules/crypto-js/mode-ctr-gladman.js"(exports, module2) {
+  "node_modules/crypto-js/mode-ctr-gladman.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3834,9 +3834,9 @@ var require_mode_ctr_gladman = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/mode-ofb.js
+// node_modules/crypto-js/mode-ofb.js
 var require_mode_ofb = __commonJS({
-  "../../../node_modules/crypto-js/mode-ofb.js"(exports, module2) {
+  "node_modules/crypto-js/mode-ofb.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3872,9 +3872,9 @@ var require_mode_ofb = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/mode-ecb.js
+// node_modules/crypto-js/mode-ecb.js
 var require_mode_ecb = __commonJS({
-  "../../../node_modules/crypto-js/mode-ecb.js"(exports, module2) {
+  "node_modules/crypto-js/mode-ecb.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3903,9 +3903,9 @@ var require_mode_ecb = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/pad-ansix923.js
+// node_modules/crypto-js/pad-ansix923.js
 var require_pad_ansix923 = __commonJS({
-  "../../../node_modules/crypto-js/pad-ansix923.js"(exports, module2) {
+  "node_modules/crypto-js/pad-ansix923.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3935,9 +3935,9 @@ var require_pad_ansix923 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/pad-iso10126.js
+// node_modules/crypto-js/pad-iso10126.js
 var require_pad_iso10126 = __commonJS({
-  "../../../node_modules/crypto-js/pad-iso10126.js"(exports, module2) {
+  "node_modules/crypto-js/pad-iso10126.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3963,9 +3963,9 @@ var require_pad_iso10126 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/pad-iso97971.js
+// node_modules/crypto-js/pad-iso97971.js
 var require_pad_iso97971 = __commonJS({
-  "../../../node_modules/crypto-js/pad-iso97971.js"(exports, module2) {
+  "node_modules/crypto-js/pad-iso97971.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3990,9 +3990,9 @@ var require_pad_iso97971 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/pad-zeropadding.js
+// node_modules/crypto-js/pad-zeropadding.js
 var require_pad_zeropadding = __commonJS({
-  "../../../node_modules/crypto-js/pad-zeropadding.js"(exports, module2) {
+  "node_modules/crypto-js/pad-zeropadding.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -4024,9 +4024,9 @@ var require_pad_zeropadding = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/pad-nopadding.js
+// node_modules/crypto-js/pad-nopadding.js
 var require_pad_nopadding = __commonJS({
-  "../../../node_modules/crypto-js/pad-nopadding.js"(exports, module2) {
+  "node_modules/crypto-js/pad-nopadding.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -4047,9 +4047,9 @@ var require_pad_nopadding = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/format-hex.js
+// node_modules/crypto-js/format-hex.js
 var require_format_hex = __commonJS({
-  "../../../node_modules/crypto-js/format-hex.js"(exports, module2) {
+  "node_modules/crypto-js/format-hex.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -4107,9 +4107,9 @@ var require_format_hex = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/aes.js
+// node_modules/crypto-js/aes.js
 var require_aes = __commonJS({
-  "../../../node_modules/crypto-js/aes.js"(exports, module2) {
+  "node_modules/crypto-js/aes.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_enc_base64(), require_md5(), require_evpkdf(), require_cipher_core());
@@ -4261,9 +4261,9 @@ var require_aes = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/tripledes.js
+// node_modules/crypto-js/tripledes.js
 var require_tripledes = __commonJS({
-  "../../../node_modules/crypto-js/tripledes.js"(exports, module2) {
+  "node_modules/crypto-js/tripledes.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_enc_base64(), require_md5(), require_evpkdf(), require_cipher_core());
@@ -5042,9 +5042,9 @@ var require_tripledes = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/rc4.js
+// node_modules/crypto-js/rc4.js
 var require_rc4 = __commonJS({
-  "../../../node_modules/crypto-js/rc4.js"(exports, module2) {
+  "node_modules/crypto-js/rc4.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_enc_base64(), require_md5(), require_evpkdf(), require_cipher_core());
@@ -5125,9 +5125,9 @@ var require_rc4 = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/rabbit.js
+// node_modules/crypto-js/rabbit.js
 var require_rabbit = __commonJS({
-  "../../../node_modules/crypto-js/rabbit.js"(exports, module2) {
+  "node_modules/crypto-js/rabbit.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_enc_base64(), require_md5(), require_evpkdf(), require_cipher_core());
@@ -5254,9 +5254,9 @@ var require_rabbit = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/rabbit-legacy.js
+// node_modules/crypto-js/rabbit-legacy.js
 var require_rabbit_legacy = __commonJS({
-  "../../../node_modules/crypto-js/rabbit-legacy.js"(exports, module2) {
+  "node_modules/crypto-js/rabbit-legacy.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_enc_base64(), require_md5(), require_evpkdf(), require_cipher_core());
@@ -5380,9 +5380,9 @@ var require_rabbit_legacy = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/blowfish.js
+// node_modules/crypto-js/blowfish.js
 var require_blowfish = __commonJS({
-  "../../../node_modules/crypto-js/blowfish.js"(exports, module2) {
+  "node_modules/crypto-js/blowfish.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_enc_base64(), require_md5(), require_evpkdf(), require_cipher_core());
@@ -6569,9 +6569,9 @@ var require_blowfish = __commonJS({
   }
 });
 
-// ../../../node_modules/crypto-js/index.js
+// node_modules/crypto-js/index.js
 var require_crypto_js = __commonJS({
-  "../../../node_modules/crypto-js/index.js"(exports, module2) {
+  "node_modules/crypto-js/index.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_x64_core(), require_lib_typedarrays(), require_enc_utf16(), require_enc_base64(), require_enc_base64url(), require_md5(), require_sha1(), require_sha256(), require_sha224(), require_sha512(), require_sha384(), require_sha3(), require_ripemd160(), require_hmac(), require_pbkdf2(), require_evpkdf(), require_cipher_core(), require_mode_cfb(), require_mode_ctr(), require_mode_ctr_gladman(), require_mode_ofb(), require_mode_ecb(), require_pad_ansix923(), require_pad_iso10126(), require_pad_iso97971(), require_pad_zeropadding(), require_pad_nopadding(), require_format_hex(), require_aes(), require_tripledes(), require_rc4(), require_rabbit(), require_rabbit_legacy(), require_blowfish());
@@ -6595,11 +6595,101 @@ module.exports = __toCommonJS(main_exports);
 var import_obsidian3 = require("obsidian");
 
 // src/types.ts
+var EMBEDDING_PROFILES = {
+  clean_v1: {
+    id: "clean_v1",
+    version: 1,
+    label: "Clean v1",
+    description: "Removes generated scaffolding and embeds the semantic note body.",
+    includeTitle: true,
+    includePath: true,
+    transform: "clean_v1"
+  },
+  raw_v1: {
+    id: "raw_v1",
+    version: 1,
+    label: "Raw v1",
+    description: "Embeds title, path, and raw Markdown for comparison.",
+    includeTitle: true,
+    includePath: true,
+    transform: "raw_v1"
+  },
+  legacy_v0: {
+    id: "legacy_v0",
+    version: 1,
+    label: "Legacy v0",
+    description: "Pre-profile vectors migrated from the original plugin cache.",
+    includeTitle: true,
+    includePath: true,
+    transform: "legacy_v0"
+  }
+};
+var DEFAULT_EMBEDDING_PROFILE = "clean_v1";
+var USER_SELECTABLE_EMBEDDING_PROFILES = ["clean_v1", "raw_v1"];
 var DEFAULT_SETTINGS = {
   geminiApiKey: "",
   relatedNotesLimit: 10,
-  embeddingRequestDelayMs: 0
+  embeddingRequestDelayMs: 0,
+  defaultEmbeddingProfile: "clean_v1",
+  storedEmbeddingProfiles: ["clean_v1", "raw_v1"],
+  sidebarProfileMode: "default",
+  sidebarSelectedProfile: "clean_v1",
+  sidebarCompareLeftProfile: "clean_v1",
+  sidebarCompareRightProfile: "raw_v1"
 };
+function isEmbeddingProfileId(value) {
+  return typeof value === "string" && value in EMBEDDING_PROFILES;
+}
+function isUserSelectableEmbeddingProfileId(value) {
+  return USER_SELECTABLE_EMBEDDING_PROFILES.includes(value);
+}
+function getEmbeddingProfileLabel(profileId) {
+  return EMBEDDING_PROFILES[profileId].label;
+}
+function normalizeRelatedNotesSettings(input) {
+  const raw = input && typeof input === "object" ? input : {};
+  const defaultEmbeddingProfile = isUserSelectableEmbeddingProfileId(raw.defaultEmbeddingProfile) ? raw.defaultEmbeddingProfile : DEFAULT_EMBEDDING_PROFILE;
+  const rawStored = Array.isArray(raw.storedEmbeddingProfiles) ? raw.storedEmbeddingProfiles : DEFAULT_SETTINGS.storedEmbeddingProfiles;
+  const storedEmbeddingProfiles = dedupeProfiles(
+    rawStored.filter(isUserSelectableEmbeddingProfileId).concat(defaultEmbeddingProfile)
+  );
+  const sidebarProfileMode = raw.sidebarProfileMode === "single" || raw.sidebarProfileMode === "compare" ? raw.sidebarProfileMode : "default";
+  const sidebarSelectedProfile = chooseStoredProfile(raw.sidebarSelectedProfile, storedEmbeddingProfiles, defaultEmbeddingProfile);
+  const sidebarCompareLeftProfile = chooseStoredProfile(
+    raw.sidebarCompareLeftProfile,
+    storedEmbeddingProfiles,
+    defaultEmbeddingProfile
+  );
+  const sidebarCompareRightProfile = chooseStoredProfile(
+    raw.sidebarCompareRightProfile,
+    storedEmbeddingProfiles,
+    storedEmbeddingProfiles.find((profile) => profile !== sidebarCompareLeftProfile) ?? defaultEmbeddingProfile
+  );
+  return {
+    ...DEFAULT_SETTINGS,
+    ...raw,
+    relatedNotesLimit: normalizeLimit(raw.relatedNotesLimit),
+    embeddingRequestDelayMs: normalizeDelayMs(raw.embeddingRequestDelayMs),
+    defaultEmbeddingProfile,
+    storedEmbeddingProfiles,
+    sidebarProfileMode,
+    sidebarSelectedProfile,
+    sidebarCompareLeftProfile,
+    sidebarCompareRightProfile
+  };
+}
+function dedupeProfiles(profiles) {
+  return [...new Set(profiles)];
+}
+function chooseStoredProfile(value, storedProfiles, fallback) {
+  return isEmbeddingProfileId(value) && storedProfiles.includes(value) ? value : fallback;
+}
+function normalizeLimit(value) {
+  return typeof value === "number" && Number.isFinite(value) ? Math.max(1, Math.min(50, Math.floor(value))) : DEFAULT_SETTINGS.relatedNotesLimit;
+}
+function normalizeDelayMs(value) {
+  return typeof value === "number" && Number.isFinite(value) ? Math.max(0, Math.floor(value)) : DEFAULT_SETTINGS.embeddingRequestDelayMs;
+}
 
 // src/settings.ts
 var import_obsidian = require("obsidian");
@@ -6632,7 +6722,64 @@ var RelatedNotesSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
     containerEl.createEl("h3", { text: "Indexing" });
-    new import_obsidian.Setting(containerEl).setName("Index Missing Notes").setDesc("Only embed Markdown notes that are not already present in the local index.").addButton(
+    new import_obsidian.Setting(containerEl).setName("Default embedding profile").setDesc("Normal indexing, related-note lookup, and Workbench export use this profile.").addDropdown((dropdown) => {
+      for (const profileId of USER_SELECTABLE_EMBEDDING_PROFILES) {
+        dropdown.addOption(profileId, getEmbeddingProfileLabel(profileId));
+      }
+      dropdown.setValue(this.plugin.settings.defaultEmbeddingProfile).onChange(async (value) => {
+        this.plugin.settings.defaultEmbeddingProfile = value;
+        this.plugin.settings = normalizeRelatedNotesSettings(this.plugin.settings);
+        await this.plugin.saveSettings();
+        this.display();
+      });
+    });
+    new import_obsidian.Setting(containerEl).setName("Store Clean v1").setDesc("Clean v1 is the recommended profile and is always stored when it is the default.").addToggle(
+      (toggle) => toggle.setValue(this.plugin.settings.storedEmbeddingProfiles.includes("clean_v1")).setDisabled(this.plugin.settings.defaultEmbeddingProfile === "clean_v1").onChange(async (value) => {
+        this.setStoredProfile("clean_v1", value);
+        await this.plugin.saveSettings();
+        this.display();
+      })
+    );
+    new import_obsidian.Setting(containerEl).setName("Store Raw v1").setDesc("Raw v1 is only indexed when you explicitly request it.").addToggle(
+      (toggle) => toggle.setValue(this.plugin.settings.storedEmbeddingProfiles.includes("raw_v1")).setDisabled(this.plugin.settings.defaultEmbeddingProfile === "raw_v1").onChange(async (value) => {
+        this.setStoredProfile("raw_v1", value);
+        await this.plugin.saveSettings();
+        this.display();
+      })
+    );
+    containerEl.createEl("h3", { text: "Sidebar" });
+    new import_obsidian.Setting(containerEl).setName("Sidebar profile mode").setDesc("Choose whether the sidebar follows the default profile, a single stored profile, or compares two profiles.").addDropdown(
+      (dropdown) => dropdown.addOption("default", "Default profile").addOption("single", "Single stored profile").addOption("compare", "Compare two profiles").setValue(this.plugin.settings.sidebarProfileMode).onChange(async (value) => {
+        this.plugin.settings.sidebarProfileMode = value;
+        this.plugin.settings = normalizeRelatedNotesSettings(this.plugin.settings);
+        await this.plugin.saveSettings();
+        this.display();
+      })
+    );
+    new import_obsidian.Setting(containerEl).setName("Single profile").setDesc("Used when sidebar mode is set to single profile.").addDropdown((dropdown) => {
+      this.addStoredProfileOptions(dropdown);
+      dropdown.setValue(this.plugin.settings.sidebarSelectedProfile).onChange(async (value) => {
+        this.plugin.settings.sidebarSelectedProfile = value;
+        this.plugin.settings = normalizeRelatedNotesSettings(this.plugin.settings);
+        await this.plugin.saveSettings();
+      });
+    });
+    new import_obsidian.Setting(containerEl).setName("Compare profiles").setDesc("Used when sidebar mode is set to compare two profiles.").addDropdown((dropdown) => {
+      this.addStoredProfileOptions(dropdown);
+      dropdown.setValue(this.plugin.settings.sidebarCompareLeftProfile).onChange(async (value) => {
+        this.plugin.settings.sidebarCompareLeftProfile = value;
+        this.plugin.settings = normalizeRelatedNotesSettings(this.plugin.settings);
+        await this.plugin.saveSettings();
+      });
+    }).addDropdown((dropdown) => {
+      this.addStoredProfileOptions(dropdown);
+      dropdown.setValue(this.plugin.settings.sidebarCompareRightProfile).onChange(async (value) => {
+        this.plugin.settings.sidebarCompareRightProfile = value;
+        this.plugin.settings = normalizeRelatedNotesSettings(this.plugin.settings);
+        await this.plugin.saveSettings();
+      });
+    });
+    new import_obsidian.Setting(containerEl).setName("Index missing notes").setDesc("Only embed Markdown notes that are not already present in the default profile.").addButton(
       (btn) => btn.setButtonText("Index Missing").onClick(async () => {
         await this.plugin.indexMissingNotes();
       })
@@ -6642,11 +6789,36 @@ var RelatedNotesSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.reindexVault();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Clear Index").setDesc("Remove all local semantic data.").addButton(
-      (btn) => btn.setButtonText("Clear Index").setWarning().onClick(async () => {
-        await this.plugin.store.clear();
+    new import_obsidian.Setting(containerEl).setName("Index all stored profiles").setDesc("Runs missing-note indexing for every stored profile, including Raw v1 if enabled.").addButton(
+      (btn) => btn.setButtonText("Index Stored Profiles").onClick(async () => {
+        await this.plugin.indexAllStoredProfiles();
       })
     );
+    new import_obsidian.Setting(containerEl).setName("Clear default profile index").setDesc("Remove local semantic data for the default profile only.").addButton(
+      (btn) => btn.setButtonText("Clear Default").setWarning().onClick(async () => {
+        await this.plugin.clearDefaultProfileIndex();
+      })
+    );
+    new import_obsidian.Setting(containerEl).setName("Clear all profile indexes").setDesc("Remove all local semantic data, including comparison profiles.").addButton(
+      (btn) => btn.setButtonText("Clear All").setWarning().onClick(async () => {
+        await this.plugin.clearAllProfileIndexes();
+      })
+    );
+  }
+  setStoredProfile(profileId, enabled) {
+    const set = new Set(this.plugin.settings.storedEmbeddingProfiles);
+    if (enabled) {
+      set.add(profileId);
+    } else {
+      set.delete(profileId);
+    }
+    this.plugin.settings.storedEmbeddingProfiles = [...set];
+    this.plugin.settings = normalizeRelatedNotesSettings(this.plugin.settings);
+  }
+  addStoredProfileOptions(dropdown) {
+    for (const profileId of this.plugin.settings.storedEmbeddingProfiles) {
+      dropdown.addOption(profileId, getEmbeddingProfileLabel(profileId));
+    }
   }
 };
 
@@ -6689,7 +6861,7 @@ var JsonVectorStore = class {
     this.plugin = plugin;
     this.storagePath = `${this.plugin.app.vault.configDir}/plugins/${this.plugin.manifest.id}/index.json`;
   }
-  data = /* @__PURE__ */ new Map();
+  index = createEmptyIndex();
   storagePath;
   async init() {
     console.log("Initializing JsonVectorStore with path:", this.storagePath);
@@ -6698,8 +6870,8 @@ var JsonVectorStore = class {
       console.log("Found index.json, size:", content.length);
       try {
         const parsed = JSON.parse(content);
-        this.data = new Map(Object.entries(parsed));
-        console.log("Loaded records:", this.data.size);
+        this.index = parseVectorIndex(parsed);
+        console.log("Loaded profiles:", Object.keys(this.index.profiles).length);
       } catch (e) {
         console.error("Failed to parse vector index:", e);
       }
@@ -6708,44 +6880,64 @@ var JsonVectorStore = class {
     }
   }
   async save() {
-    const obj = Object.fromEntries(this.data);
-    await this.plugin.app.vault.adapter.write(this.storagePath, JSON.stringify(obj, null, 2));
+    this.index.updatedAt = Date.now();
+    await this.plugin.app.vault.adapter.write(this.storagePath, JSON.stringify(this.index, null, 2));
   }
   async upsertNote(record) {
-    this.data.set(record.path, record);
+    const bucket = this.getOrCreateBucket(record.embeddingProfile, record.embeddingModel);
+    bucket.records[record.path] = normalizeRecord(record, record.embeddingProfile);
+    bucket.profileVersion = record.embeddingProfileVersion;
+    bucket.embeddingModel = record.embeddingModel;
+    bucket.updatedAt = Date.now();
   }
   async upsertNotes(records) {
     for (const record of records) {
-      this.data.set(record.path, record);
+      await this.upsertNote(record);
     }
     await this.flush();
   }
   async flush() {
     await this.save();
   }
-  async getNote(path) {
-    const note = this.data.get(path);
+  async getNote(path, profileId) {
+    const records = this.index.profiles[profileId]?.records ?? {};
+    const note = records[path];
     if (!note) {
       console.log("[JsonVectorStore] Note not found for path:", path);
       const normalized = path.replace(/\\/g, "/");
-      return this.data.get(normalized) || null;
+      return records[normalized] || null;
     }
     return note;
   }
-  async deleteNote(path) {
-    this.data.delete(path);
+  async deleteNote(path, profileId) {
+    const bucket = this.index.profiles[profileId];
+    if (bucket) {
+      delete bucket.records[path];
+      bucket.updatedAt = Date.now();
+    }
     await this.save();
   }
-  async listIndexedPaths() {
-    return Array.from(this.data.keys());
+  async listIndexedPaths(profileId) {
+    return Object.keys(this.index.profiles[profileId]?.records ?? {}).sort();
+  }
+  async clearProfile(profileId) {
+    delete this.index.profiles[profileId];
+    await this.save();
+  }
+  async clearAllProfiles() {
+    this.index = createEmptyIndex();
+    await this.save();
+  }
+  async listStoredProfiles() {
+    return Object.keys(this.index.profiles).filter((profileId) => isEmbeddingProfileId(profileId)).filter((profileId) => Object.keys(this.index.profiles[profileId]?.records ?? {}).length > 0).sort((a, b) => profileSortIndex(a) - profileSortIndex(b));
   }
   async clear() {
-    this.data.clear();
-    await this.save();
+    await this.clearAllProfiles();
   }
   async searchSimilar(vector, options) {
     const results = [];
-    for (const record of this.data.values()) {
+    const records = Object.values(this.index.profiles[options.profileId]?.records ?? {});
+    for (const record of records) {
       if (options.excludePath && record.path === options.excludePath)
         continue;
       const score = this.cosineSimilarity(vector, record.vector);
@@ -6754,6 +6946,8 @@ var JsonVectorStore = class {
     return results.sort((a, b) => b.score - a.score).slice(0, options.limit);
   }
   cosineSimilarity(a, b) {
+    if (a.length === 0 || a.length !== b.length)
+      return 0;
     let dot = 0;
     let normA = 0;
     let normB = 0;
@@ -6766,9 +6960,122 @@ var JsonVectorStore = class {
       return 0;
     return dot / (Math.sqrt(normA) * Math.sqrt(normB));
   }
+  getOrCreateBucket(profileId, embeddingModel) {
+    const existing = this.index.profiles[profileId];
+    if (existing)
+      return existing;
+    const profile = EMBEDDING_PROFILES[profileId];
+    const bucket = {
+      profileId,
+      profileVersion: profile.version,
+      embeddingModel,
+      updatedAt: Date.now(),
+      records: {}
+    };
+    this.index.profiles[profileId] = bucket;
+    return bucket;
+  }
 };
+function createEmptyIndex() {
+  return {
+    schema: "related-notes-obsidian.vector-index.v2",
+    updatedAt: Date.now(),
+    profiles: {}
+  };
+}
+function parseVectorIndex(value) {
+  if (isVectorIndexV2(value))
+    return normalizeVectorIndexV2(value);
+  return migratePathKeyedIndex(value);
+}
+function isVectorIndexV2(value) {
+  return Boolean(
+    value && typeof value === "object" && value.schema === "related-notes-obsidian.vector-index.v2" && typeof value.profiles === "object"
+  );
+}
+function normalizeVectorIndexV2(value) {
+  const index = {
+    schema: "related-notes-obsidian.vector-index.v2",
+    updatedAt: typeof value.updatedAt === "number" ? value.updatedAt : Date.now(),
+    migratedFrom: value.migratedFrom,
+    profiles: {}
+  };
+  for (const [profileId, bucket] of Object.entries(value.profiles)) {
+    if (!isEmbeddingProfileId(profileId) || !bucket)
+      continue;
+    index.profiles[profileId] = {
+      profileId,
+      profileVersion: bucket.profileVersion ?? EMBEDDING_PROFILES[profileId].version,
+      embeddingModel: bucket.embeddingModel ?? "",
+      updatedAt: bucket.updatedAt ?? Date.now(),
+      records: Object.fromEntries(
+        Object.entries(bucket.records ?? {}).map(([path, record]) => [
+          path,
+          normalizeRecord(record, profileId)
+        ])
+      )
+    };
+  }
+  return index;
+}
+function migratePathKeyedIndex(value) {
+  const index = createEmptyIndex();
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    return index;
+  const records = {};
+  for (const [path, rawRecord] of Object.entries(value)) {
+    if (!rawRecord || typeof rawRecord !== "object")
+      continue;
+    const record = normalizeRecord({ ...rawRecord, path }, "legacy_v0");
+    records[path] = record;
+  }
+  if (Object.keys(records).length > 0) {
+    index.migratedFrom = "related-notes-obsidian.vector-index.v1";
+    index.profiles.legacy_v0 = {
+      profileId: "legacy_v0",
+      profileVersion: EMBEDDING_PROFILES.legacy_v0.version,
+      embeddingModel: firstRecord(records)?.embeddingModel ?? "",
+      updatedAt: Date.now(),
+      records
+    };
+  }
+  return index;
+}
+function normalizeRecord(rawRecord, profileId) {
+  const record = rawRecord && typeof rawRecord === "object" ? rawRecord : {};
+  const representationHash = record.representationHash ?? record.contentHash ?? "";
+  return {
+    path: String(record.path ?? ""),
+    title: String(record.title ?? record.path ?? ""),
+    folder: String(record.folder ?? ""),
+    preview: String(record.preview ?? ""),
+    rawContentHash: String(record.rawContentHash ?? record.contentHash ?? representationHash),
+    representationHash: String(representationHash),
+    contentHash: String(record.contentHash ?? representationHash),
+    mtime: typeof record.mtime === "number" ? record.mtime : 0,
+    embeddingModel: String(record.embeddingModel ?? ""),
+    embeddingProfile: profileId,
+    embeddingProfileVersion: typeof record.embeddingProfileVersion === "number" ? record.embeddingProfileVersion : EMBEDDING_PROFILES[profileId].version,
+    vector: Array.isArray(record.vector) ? record.vector.filter((item) => typeof item === "number") : [],
+    updatedAt: typeof record.updatedAt === "number" ? record.updatedAt : Date.now()
+  };
+}
+function firstRecord(records) {
+  return Object.values(records)[0];
+}
+function profileSortIndex(profileId) {
+  const order = ["clean_v1", "raw_v1", "legacy_v0"];
+  return order.indexOf(profileId);
+}
+
+// src/indexing/hash.ts
+var import_crypto_js = __toESM(require_crypto_js());
+function sha256(text) {
+  return import_crypto_js.default.SHA256(text).toString();
+}
 
 // src/indexing/noteRepresentation.ts
+var MAX_EMBEDDING_CHARS = 12e3;
 function cleanMarkdown(markdown) {
   let text = markdown;
   text = text.replace(/^---[\s\S]*?---/, "");
@@ -6780,14 +7087,20 @@ function cleanMarkdown(markdown) {
   return text;
 }
 function buildNoteRepresentation(input) {
-  const cleanedText = cleanMarkdown(input.markdown);
-  const MAX_EMBEDDING_CHARS = 12e3;
-  const truncated = cleanedText.substring(0, MAX_EMBEDDING_CHARS);
-  return `T\xEDtulo: ${input.title}
+  const profile = EMBEDDING_PROFILES[input.profileId];
+  const body = buildProfileBody(input.markdown, input.profileId);
+  const truncated = body.substring(0, MAX_EMBEDDING_CHARS);
+  const text = `T\xEDtulo: ${input.title}
 Caminho: ${input.path}
 
 Conte\xFAdo:
 ${truncated}`;
+  return {
+    text,
+    representationHash: sha256(text),
+    profileId: input.profileId,
+    profileVersion: profile.version
+  };
 }
 function makePreview(representation, limit = 200) {
   const lines = representation.split("\n");
@@ -6795,11 +7108,59 @@ function makePreview(representation, limit = 200) {
   const content = lines.slice(contentStart + 1).join(" ");
   return content.substring(0, limit) + (content.length > limit ? "..." : "");
 }
-
-// src/indexing/hash.ts
-var import_crypto_js = __toESM(require_crypto_js());
-function sha256(text) {
-  return import_crypto_js.default.SHA256(text).toString();
+function buildProfileBody(markdown, profileId) {
+  if (profileId === "raw_v1")
+    return markdown;
+  if (profileId === "legacy_v0")
+    return cleanMarkdown(markdown);
+  return cleanMarkdownV1(markdown);
+}
+function cleanMarkdownV1(markdown) {
+  const codeBlocks = [];
+  let text = markdown.replace(/```[\s\S]*?```/g, (block) => {
+    const token = `@@RELATED_NOTES_CODE_BLOCK_${codeBlocks.length}@@`;
+    codeBlocks.push(block);
+    return token;
+  });
+  text = removeFrontmatter(text);
+  text = removeRelatedNotesSection(text);
+  text = removeGeneratedFooter(text);
+  text = text.replace(/<!--[\s\S]*?-->/g, "");
+  text = text.replace(/!\[\[[^\]]+\]\]/g, "");
+  text = text.replace(/!\[[^\]]*\]\([^)]+\)/g, "");
+  text = text.replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, "$2");
+  text = text.replace(/\[\[([^\]]+)\]\]/g, "$1");
+  text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+  text = restoreCodeBlocks(text, codeBlocks);
+  return normalizeCleanWhitespace(text);
+}
+function removeFrontmatter(text) {
+  return text.replace(/^---\r?\n[\s\S]*?\r?\n---\s*(?:\r?\n|$)/, "");
+}
+function removeRelatedNotesSection(text) {
+  const heading = /^##\s+(?:🔗\s+)?Notas Relacionadas\s*$/m;
+  const match = heading.exec(text);
+  if (!match)
+    return text;
+  const nextHeading = /^##\s+/m;
+  nextHeading.lastIndex = 0;
+  const afterHeading = text.slice(match.index + match[0].length);
+  const next = nextHeading.exec(afterHeading);
+  const end = next ? match.index + match[0].length + next.index : text.length;
+  return `${text.slice(0, match.index)}${text.slice(end)}`;
+}
+function removeGeneratedFooter(text) {
+  const footer = /\n---\s*\n(?:Gerado|Generated|Exportado|Fonte|Source|Criado|Created)[\s\S]*$/i;
+  return text.replace(footer, "");
+}
+function restoreCodeBlocks(text, codeBlocks) {
+  return text.replace(/@@RELATED_NOTES_CODE_BLOCK_(\d+)@@/g, (_token, indexText) => {
+    const index = Number(indexText);
+    return codeBlocks[index] ?? "";
+  });
+}
+function normalizeCleanWhitespace(text) {
+  return text.split(/\r?\n/).map((line) => line.trimEnd()).join("\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
 // src/indexing/VaultIndexer.ts
@@ -6808,21 +7169,21 @@ var VaultIndexer = class {
     this.app = app;
     this.store = store;
     this.embeddingProvider = embeddingProvider;
-    this.embeddingRequestDelayMs = normalizeDelayMs(options.embeddingRequestDelayMs ?? 0);
+    this.embeddingRequestDelayMs = normalizeDelayMs2(options.embeddingRequestDelayMs ?? 0);
     this.sleep = options.sleep ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
   }
   embeddingRequestDelayMs;
   sleep;
   setEmbeddingRequestDelayMs(delayMs) {
-    this.embeddingRequestDelayMs = normalizeDelayMs(delayMs);
+    this.embeddingRequestDelayMs = normalizeDelayMs2(delayMs);
   }
-  async reindexVault(onProgress) {
+  async reindexVault(profileId = DEFAULT_EMBEDDING_PROFILE, onProgress) {
     this.requireReadyProvider();
     const markdownFiles = this.app.vault.getMarkdownFiles();
     const total = markdownFiles.length;
     let current = 0;
     let processedInThisBatch = 0;
-    const indexedPaths = new Set(await this.store.listIndexedPaths());
+    const indexedPaths = new Set(await this.store.listIndexedPaths(profileId));
     try {
       for (const file of markdownFiles) {
         current++;
@@ -6830,29 +7191,20 @@ var VaultIndexer = class {
           onProgress(current, total);
         try {
           const markdown = await this.app.vault.read(file);
-          const representation = buildNoteRepresentation({
+          const built = buildNoteRepresentation({
             path: file.path,
             title: file.basename,
-            markdown
+            markdown,
+            profileId
           });
-          const contentHash = sha256(representation);
-          const existing = await this.store.getNote(file.path);
-          if (existing && existing.contentHash === contentHash) {
+          const rawContentHash = sha256(markdown);
+          const existing = await this.store.getNote(file.path, profileId);
+          if (existing && this.isRecordCurrent(existing, rawContentHash, built.representationHash, profileId, built.profileVersion)) {
             indexedPaths.delete(file.path);
             continue;
           }
-          const vector = await this.embeddingProvider.embed(representation);
-          await this.store.upsertNote({
-            path: file.path,
-            title: file.basename,
-            folder: file.parent?.path ?? "",
-            preview: makePreview(representation),
-            contentHash,
-            mtime: file.stat.mtime,
-            embeddingModel: this.embeddingProvider.model,
-            vector,
-            updatedAt: Date.now()
-          });
+          const vector = await this.embeddingProvider.embed(built.text);
+          await this.store.upsertNote(this.makeRecord(file, rawContentHash, built, vector));
           indexedPaths.delete(file.path);
           processedInThisBatch++;
           if (processedInThisBatch % 10 === 0) {
@@ -6869,16 +7221,16 @@ var VaultIndexer = class {
         }
       }
       for (const orphanPath of indexedPaths) {
-        await this.store.deleteNote(orphanPath);
+        await this.store.deleteNote(orphanPath, profileId);
       }
     } finally {
       await this.store.flush();
     }
   }
-  async indexMissingNotes(onProgress) {
+  async indexMissingNotes(profileId = DEFAULT_EMBEDDING_PROFILE, onProgress) {
     this.requireReadyProvider();
     const markdownFiles = this.app.vault.getMarkdownFiles();
-    const indexedPaths = new Set(await this.store.listIndexedPaths());
+    const indexedPaths = new Set(await this.store.listIndexedPaths(profileId));
     const missingFiles = markdownFiles.filter((file) => !indexedPaths.has(file.path));
     let current = 0;
     try {
@@ -6886,7 +7238,7 @@ var VaultIndexer = class {
         current++;
         if (onProgress)
           onProgress(current, missingFiles.length);
-        await this.indexFile(file);
+        await this.indexFile(file, profileId);
         if (current < missingFiles.length) {
           await this.delayAfterEmbeddingRequest();
         }
@@ -6900,27 +7252,18 @@ var VaultIndexer = class {
       skippedCount: markdownFiles.length - missingFiles.length
     };
   }
-  async indexFile(file) {
+  async indexFile(file, profileId = DEFAULT_EMBEDDING_PROFILE) {
     try {
       const markdown = await this.app.vault.read(file);
-      const representation = buildNoteRepresentation({
+      const built = buildNoteRepresentation({
         path: file.path,
         title: file.basename,
-        markdown
+        markdown,
+        profileId
       });
-      const contentHash = sha256(representation);
-      const vector = await this.embeddingProvider.embed(representation);
-      await this.store.upsertNote({
-        path: file.path,
-        title: file.basename,
-        folder: file.parent?.path ?? "",
-        preview: makePreview(representation),
-        contentHash,
-        mtime: file.stat.mtime,
-        embeddingModel: this.embeddingProvider.model,
-        vector,
-        updatedAt: Date.now()
-      });
+      const rawContentHash = sha256(markdown);
+      const vector = await this.embeddingProvider.embed(built.text);
+      await this.store.upsertNote(this.makeRecord(file, rawContentHash, built, vector));
     } catch (e) {
       console.error(`Failed to index single file ${file.path}:`, e);
       throw e;
@@ -6936,8 +7279,28 @@ var VaultIndexer = class {
       await this.sleep(this.embeddingRequestDelayMs);
     }
   }
+  isRecordCurrent(record, rawContentHash, representationHash, profileId, profileVersion) {
+    return record.rawContentHash === rawContentHash && record.representationHash === representationHash && record.embeddingModel === this.embeddingProvider.model && record.embeddingProfile === profileId && record.embeddingProfileVersion === profileVersion;
+  }
+  makeRecord(file, rawContentHash, built, vector) {
+    return {
+      path: file.path,
+      title: file.basename,
+      folder: file.parent?.path ?? "",
+      preview: makePreview(built.text),
+      rawContentHash,
+      representationHash: built.representationHash,
+      contentHash: built.representationHash,
+      mtime: file.stat.mtime,
+      embeddingModel: this.embeddingProvider.model,
+      embeddingProfile: built.profileId,
+      embeddingProfileVersion: built.profileVersion,
+      vector,
+      updatedAt: Date.now()
+    };
+  }
 };
-function normalizeDelayMs(value) {
+function normalizeDelayMs2(value) {
   if (!Number.isFinite(value))
     return 0;
   return Math.max(0, Math.floor(value));
@@ -6948,9 +7311,9 @@ var RelatedNotesService = class {
   constructor(store) {
     this.store = store;
   }
-  async getRelatedNotes(path, limit = 10) {
+  async getRelatedNotes(path, limit = 10, profileId = DEFAULT_EMBEDDING_PROFILE) {
     try {
-      const current = await this.store.getNote(path);
+      const current = await this.store.getNote(path, profileId);
       if (!current) {
         return {
           status: "not_indexed",
@@ -6959,7 +7322,8 @@ var RelatedNotesService = class {
       }
       const results = await this.store.searchSimilar(current.vector, {
         limit,
-        excludePath: path
+        excludePath: path,
+        profileId
       });
       return {
         status: "ok",
@@ -6977,6 +7341,46 @@ var RelatedNotesService = class {
 
 // src/ui/RelatedNotesView.ts
 var import_obsidian2 = require("obsidian");
+
+// src/ui/profileComparison.ts
+function compareProfileResults(left, right, rankChangeThreshold = 2) {
+  const leftByPath = new Map(left.map((note, index) => [note.path, { note, rank: index + 1 }]));
+  const rightByPath = new Map(right.map((note, index) => [note.path, { note, rank: index + 1 }]));
+  const both = [];
+  const leftOnly = [];
+  const rightOnly = [];
+  for (const [path, leftItem] of leftByPath) {
+    const rightItem = rightByPath.get(path);
+    if (!rightItem) {
+      leftOnly.push(leftItem.note);
+      continue;
+    }
+    both.push({
+      path,
+      title: leftItem.note.title || rightItem.note.title,
+      leftScore: leftItem.note.score,
+      rightScore: rightItem.note.score,
+      scoreDelta: roundDelta(rightItem.note.score - leftItem.note.score),
+      leftRank: leftItem.rank,
+      rightRank: rightItem.rank,
+      rankDelta: rightItem.rank - leftItem.rank
+    });
+  }
+  for (const [path, rightItem] of rightByPath) {
+    if (!leftByPath.has(path))
+      rightOnly.push(rightItem.note);
+  }
+  both.sort((a, b) => Math.min(a.leftRank, a.rightRank) - Math.min(b.leftRank, b.rightRank));
+  return {
+    both,
+    leftOnly,
+    rightOnly,
+    rankChanged: both.filter((item) => Math.abs(item.rankDelta) >= rankChangeThreshold)
+  };
+}
+function roundDelta(value) {
+  return Math.round(value * 100) / 100;
+}
 
 // src/ui/viewHelpers.ts
 function formatScore(score) {
@@ -7071,44 +7475,12 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
       });
       return;
     }
-    const skeleton = this.renderSkeleton(container);
-    const result = await this.service.getRelatedNotes(
-      this.currentFile.path,
-      this.plugin.settings.relatedNotesLimit
-    );
-    if (token !== this.renderToken)
-      return;
-    skeleton.remove();
-    if (result.status === "not_indexed") {
-      this.renderState(container, {
-        icon: "scan-search",
-        title: "This note is not indexed yet",
-        description: "Index this note now, or reindex the vault to refresh all related-note data.",
-        primaryAction: { label: "Index this note", onClick: () => this.plugin.indexCurrentFile(this.currentFile) },
-        secondaryAction: { label: "Reindex vault", onClick: () => this.plugin.reindexVault() }
-      });
-      return;
+    if (this.plugin.settings.sidebarProfileMode === "compare") {
+      await this.renderCompareMode(container, token);
+    } else {
+      const profileId = this.plugin.settings.sidebarProfileMode === "single" ? this.plugin.settings.sidebarSelectedProfile : this.plugin.settings.defaultEmbeddingProfile;
+      await this.renderSingleProfileMode(container, token, profileId);
     }
-    if (result.status === "error") {
-      this.renderState(container, {
-        icon: "alert-triangle",
-        title: "Could not load related notes",
-        description: "Try refreshing the panel or rebuilding the index.",
-        primaryAction: { label: "Retry", onClick: () => this.updateView() },
-        secondaryAction: { label: "Reindex vault", onClick: () => this.plugin.reindexVault() }
-      });
-      return;
-    }
-    if (result.notes.length === 0) {
-      this.renderState(container, {
-        icon: "search-x",
-        title: "No related notes found",
-        description: "The current note is indexed, but no similar notes were found.",
-        primaryAction: { label: "Refresh", onClick: () => this.updateView() }
-      });
-      return;
-    }
-    this.renderResults(container, result.notes);
   }
   renderHeader(container) {
     const header = container.createDiv({ cls: "related-notes-header" });
@@ -7129,6 +7501,8 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
     });
     if (!this.currentFile)
       chip.addClass("is-empty");
+    const profileChip = contextBar.createDiv({ cls: "related-notes-profile-chip" });
+    profileChip.setText(this.getProfileContextLabel());
     const contextActions = contextBar.createDiv({ cls: "related-notes-toolbar" });
     this.addIconButton(contextActions, "refresh-cw", "Refresh results", () => this.updateView());
     this.addIconButton(
@@ -7141,7 +7515,7 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
   openOverflowMenu(event) {
     const menu = new import_obsidian2.Menu();
     menu.addItem(
-      (item) => item.setTitle("Index current note").setIcon("scan-search").setDisabled(!this.currentFile).onClick(() => this.plugin.indexCurrentFile(this.currentFile))
+      (item) => item.setTitle("Index current note").setIcon("scan-search").setDisabled(!this.currentFile).onClick(() => this.plugin.indexCurrentFile(this.currentFile, this.plugin.settings.defaultEmbeddingProfile))
     );
     menu.addItem(
       (item) => item.setTitle("Index missing notes").setIcon("list-plus").onClick(() => this.plugin.indexMissingNotes())
@@ -7155,6 +7529,101 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
       menu.showAtPosition({ x: 0, y: 0 });
     }
   }
+  async renderSingleProfileMode(container, token, profileId) {
+    if (!this.service || !this.currentFile)
+      return;
+    const skeleton = this.renderSkeleton(container);
+    const result = await this.service.getRelatedNotes(
+      this.currentFile.path,
+      this.plugin.settings.relatedNotesLimit,
+      profileId
+    );
+    if (token !== this.renderToken)
+      return;
+    skeleton.remove();
+    if (this.renderProfileResultState(container, result.status, profileId))
+      return;
+    if (result.notes.length === 0) {
+      this.renderState(container, {
+        icon: "search-x",
+        title: "No related notes found",
+        description: `The current note is indexed for ${getEmbeddingProfileLabel(profileId)}, but no similar notes were found.`,
+        primaryAction: { label: "Refresh", onClick: () => this.updateView() }
+      });
+      return;
+    }
+    this.renderResults(container, result.notes);
+  }
+  async renderCompareMode(container, token) {
+    if (!this.service || !this.currentFile)
+      return;
+    const leftProfile = this.plugin.settings.sidebarCompareLeftProfile;
+    const rightProfile = this.plugin.settings.sidebarCompareRightProfile;
+    const skeleton = this.renderSkeleton(container);
+    const [left, right] = await Promise.all([
+      this.service.getRelatedNotes(this.currentFile.path, this.plugin.settings.relatedNotesLimit, leftProfile),
+      this.service.getRelatedNotes(this.currentFile.path, this.plugin.settings.relatedNotesLimit, rightProfile)
+    ]);
+    if (token !== this.renderToken)
+      return;
+    skeleton.remove();
+    const missingProfile = left.status === "not_indexed" ? leftProfile : right.status === "not_indexed" ? rightProfile : null;
+    if (missingProfile) {
+      this.renderState(container, {
+        icon: "scan-search",
+        title: `${getEmbeddingProfileLabel(missingProfile)} is not indexed yet`,
+        description: "Index this note or missing notes for that profile before comparing.",
+        primaryAction: {
+          label: "Index this note",
+          onClick: () => this.plugin.indexCurrentFile(this.currentFile, missingProfile)
+        },
+        secondaryAction: {
+          label: "Index missing notes",
+          onClick: () => this.plugin.indexMissingNotes(missingProfile)
+        }
+      });
+      return;
+    }
+    if (left.status === "error" || right.status === "error") {
+      this.renderState(container, {
+        icon: "alert-triangle",
+        title: "Could not compare profiles",
+        description: "Try refreshing the panel or rebuilding the selected profile indexes.",
+        primaryAction: { label: "Retry", onClick: () => this.updateView() }
+      });
+      return;
+    }
+    const comparison = compareProfileResults(left.notes, right.notes);
+    const summary = container.createDiv({ cls: "related-notes-summary" });
+    summary.setText(`${getEmbeddingProfileLabel(leftProfile)} vs ${getEmbeddingProfileLabel(rightProfile)}`);
+    this.renderCompareSection(container, "Both profiles", comparison.both, leftProfile, rightProfile);
+    this.renderResultsSection(container, `Only in ${getEmbeddingProfileLabel(leftProfile)}`, comparison.leftOnly);
+    this.renderResultsSection(container, `Only in ${getEmbeddingProfileLabel(rightProfile)}`, comparison.rightOnly);
+    this.renderCompareSection(container, "Rank changed", comparison.rankChanged, leftProfile, rightProfile);
+  }
+  renderProfileResultState(container, status, profileId) {
+    if (status === "not_indexed") {
+      this.renderState(container, {
+        icon: "scan-search",
+        title: `This note is not indexed for ${getEmbeddingProfileLabel(profileId)}`,
+        description: "Index this note now, or index missing notes for this profile.",
+        primaryAction: { label: "Index this note", onClick: () => this.plugin.indexCurrentFile(this.currentFile, profileId) },
+        secondaryAction: { label: "Index missing notes", onClick: () => this.plugin.indexMissingNotes(profileId) }
+      });
+      return true;
+    }
+    if (status === "error") {
+      this.renderState(container, {
+        icon: "alert-triangle",
+        title: "Could not load related notes",
+        description: "Try refreshing the panel or rebuilding the index.",
+        primaryAction: { label: "Retry", onClick: () => this.updateView() },
+        secondaryAction: { label: "Reindex profile", onClick: () => this.plugin.reindexVault(profileId) }
+      });
+      return true;
+    }
+    return false;
+  }
   renderResults(container, notes) {
     const summary = container.createDiv({ cls: "related-notes-summary" });
     summary.setText(`${notes.length} related note${notes.length === 1 ? "" : "s"}`);
@@ -7162,6 +7631,54 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
     for (const note of notes) {
       this.renderResultRow(list, note);
     }
+  }
+  renderResultsSection(container, title, notes) {
+    const section = container.createDiv({ cls: "related-notes-compare-section" });
+    section.createDiv({ text: `${title} (${notes.length})`, cls: "related-notes-compare-heading" });
+    if (notes.length === 0) {
+      section.createDiv({ text: "No notes", cls: "related-notes-compare-empty" });
+      return;
+    }
+    for (const note of notes)
+      this.renderSimpleResultRow(section, note);
+  }
+  renderCompareSection(container, title, notes, leftProfile, rightProfile) {
+    const section = container.createDiv({ cls: "related-notes-compare-section" });
+    section.createDiv({ text: `${title} (${notes.length})`, cls: "related-notes-compare-heading" });
+    if (notes.length === 0) {
+      section.createDiv({ text: "No notes", cls: "related-notes-compare-empty" });
+      return;
+    }
+    for (const note of notes) {
+      const row = section.createDiv({ cls: "related-notes-compare-row" });
+      row.setAttr("role", "button");
+      row.setAttr("tabindex", "0");
+      row.addEventListener("click", (event) => {
+        const newPane = event.metaKey || event.ctrlKey;
+        this.openNote(note.path, newPane);
+      });
+      const titleLine = row.createDiv({ cls: "related-notes-row-title-line" });
+      titleLine.createDiv({ text: note.title, cls: "related-notes-row-title" });
+      titleLine.createSpan({ text: formatScore(Math.max(note.leftScore, note.rightScore)), cls: "related-notes-score-text" });
+      row.createDiv({
+        text: `${getEmbeddingProfileLabel(leftProfile)} ${formatScore(note.leftScore)} \xB7 ${getEmbeddingProfileLabel(rightProfile)} ${formatScore(note.rightScore)} \xB7 \u0394 ${note.scoreDelta.toFixed(2)} \xB7 rank ${note.leftRank}\u2192${note.rightRank}`,
+        cls: "related-notes-row-meta"
+      });
+    }
+  }
+  renderSimpleResultRow(list, note) {
+    const row = list.createDiv({ cls: "related-notes-row" });
+    row.addClass(`is-score-${getScoreTone(note.score)}`);
+    row.setAttr("role", "button");
+    row.setAttr("tabindex", "0");
+    row.addEventListener("click", (event) => {
+      const newPane = event.metaKey || event.ctrlKey;
+      this.openNote(note.path, newPane);
+    });
+    const body = row.createDiv({ cls: "related-notes-row-body" });
+    const titleLine = body.createDiv({ cls: "related-notes-row-title-line" });
+    titleLine.createDiv({ text: note.title, cls: "related-notes-row-title" });
+    titleLine.createSpan({ text: formatScore(note.score), cls: "related-notes-score-text" });
   }
   renderResultRow(list, note) {
     const row = list.createDiv({ cls: "related-notes-row" });
@@ -7237,6 +7754,16 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
     });
     return btn;
   }
+  getProfileContextLabel() {
+    const settings = this.plugin.settings;
+    if (settings.sidebarProfileMode === "compare") {
+      return `${getEmbeddingProfileLabel(settings.sidebarCompareLeftProfile)} vs ${getEmbeddingProfileLabel(settings.sidebarCompareRightProfile)}`;
+    }
+    if (settings.sidebarProfileMode === "single") {
+      return getEmbeddingProfileLabel(settings.sidebarSelectedProfile);
+    }
+    return getEmbeddingProfileLabel(settings.defaultEmbeddingProfile);
+  }
   attachWidthObserver() {
     if (typeof ResizeObserver === "undefined")
       return;
@@ -7305,6 +7832,12 @@ function buildWorkbenchExportPayload(input) {
       name: input.pluginName,
       version: input.pluginVersion
     },
+    model: {
+      embedding_model: input.embeddingModel,
+      embedding_profile_id: input.profileId,
+      embedding_profile_version: EMBEDDING_PROFILES[input.profileId].version,
+      representation_hash_basis: representationHashBasis(input.profileId)
+    },
     score_scale: "0_to_1",
     notes,
     edges
@@ -7319,23 +7852,27 @@ function assertWorkbenchExportIsRedacted(value) {
   }
 }
 async function writeWorkbenchExport(options) {
-  const indexedPaths = await options.store.listIndexedPaths();
+  const profileId = options.profileId ?? DEFAULT_EMBEDDING_PROFILE;
+  const indexedPaths = await options.store.listIndexedPaths(profileId);
   const notes = [];
   const relatedBySource = /* @__PURE__ */ new Map();
+  let embeddingModel = "";
   for (const path2 of [...indexedPaths].sort()) {
     const file = options.app.vault.getAbstractFileByPath(path2);
     if (!isMarkdownFile(file))
       continue;
-    const record = await options.store.getNote(file.path);
+    const record = await options.store.getNote(file.path, profileId);
     if (!record)
       continue;
+    if (!embeddingModel)
+      embeddingModel = record.embeddingModel;
     const markdown = await options.app.vault.read(file);
     notes.push({
       path: file.path,
       title: file.basename,
       contentHash: `sha256:${sha256(markdown)}`
     });
-    const result = await options.service.getRelatedNotes(file.path, options.limit);
+    const result = await options.service.getRelatedNotes(file.path, options.limit, profileId);
     relatedBySource.set(
       file.path,
       result.status === "ok" ? result.notes.map((note) => ({
@@ -7350,12 +7887,21 @@ async function writeWorkbenchExport(options) {
     vaultRoot: getVaultRoot(options.app),
     pluginName: options.plugin.manifest.id,
     pluginVersion: options.plugin.manifest.version,
+    profileId,
+    embeddingModel,
     notes,
     relatedBySource
   });
   const path = `${options.app.vault.configDir}/plugins/${options.plugin.manifest.id}/${WORKBENCH_EXPORT_PATH}`;
   await options.app.vault.adapter.write(path, JSON.stringify(payload, null, 2));
   return { path, noteCount: payload.notes.length, edgeCount: payload.edges.length };
+}
+function representationHashBasis(profileId) {
+  if (profileId === "raw_v1")
+    return "raw_markdown";
+  if (profileId === "legacy_v0")
+    return "legacy_hybrid_markdown";
+  return "profile_cleaned_markdown";
 }
 function normalizeSha256(value) {
   const trimmed = value.trim().toLowerCase();
@@ -7416,6 +7962,7 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
     this.updateStatusBar("idle");
     this.store = new JsonVectorStore(this);
     await this.store.init();
+    await this.normalizeAndPersistSettings();
     this.updateProvider();
     this.service = new RelatedNotesService(this.store);
     this.registerView(
@@ -7510,7 +8057,7 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       }
     }
     console.log("[RelatedNotes] Settings after load:", data ? "Found" : "Missing");
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, data);
+    this.settings = normalizeRelatedNotesSettings(data);
     if (this.settings.geminiApiKey) {
       console.log(`[RelatedNotes] Gemini API Key loaded (length: ${this.settings.geminiApiKey.length})`);
     } else {
@@ -7518,13 +8065,23 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
     }
   }
   async saveSettings() {
+    this.settings = normalizeRelatedNotesSettings(this.settings);
     console.log("[RelatedNotes] Saving settings...", {
       keyLength: this.settings.geminiApiKey?.length || 0,
       limit: this.settings.relatedNotesLimit,
-      embeddingRequestDelayMs: this.settings.embeddingRequestDelayMs
+      embeddingRequestDelayMs: this.settings.embeddingRequestDelayMs,
+      defaultEmbeddingProfile: this.settings.defaultEmbeddingProfile
     });
     await this.saveData(this.settings);
     this.updateProvider();
+    this.updateSidebar(this.app.workspace.getActiveFile());
+  }
+  async normalizeAndPersistSettings() {
+    const normalized = normalizeRelatedNotesSettings(this.settings);
+    const changed = JSON.stringify(normalized) !== JSON.stringify(this.settings);
+    this.settings = normalized;
+    if (changed)
+      await this.saveData(this.settings);
   }
   updateProvider() {
     console.log("[RelatedNotes] Updating embedding provider and indexer...");
@@ -7556,18 +8113,21 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       }
     }
   }
-  async reindexVault() {
-    new import_obsidian3.Notice("Indexing vault... please wait.");
-    this.updateStatusBar("indexing", "Starting...");
+  async reindexVault(profileId = this.settings.defaultEmbeddingProfile) {
+    const profileLabel = getEmbeddingProfileLabel(profileId);
+    new import_obsidian3.Notice(`Indexing vault for ${profileLabel}... please wait.`);
+    this.updateStatusBar("indexing", `Starting ${profileLabel}`);
     try {
-      await this.indexer.reindexVault((current, total) => {
+      await this.indexer.reindexVault(profileId, (current, total) => {
         const pct = current / total;
-        this.updateStatusBar("indexing", `${current}/${total}`, pct);
+        this.updateStatusBar("indexing", `${profileLabel} ${current}/${total}`, pct);
       });
       this.updateStatusBar("complete");
-      new import_obsidian3.Notice("Vault indexing complete!");
+      new import_obsidian3.Notice(`${profileLabel} vault indexing complete!`);
       this.updateSidebar(this.app.workspace.getActiveFile());
-      await this.exportWorkbenchRelatedNotes();
+      if (profileId === this.settings.defaultEmbeddingProfile) {
+        await this.exportWorkbenchRelatedNotes(profileId);
+      }
     } catch (e) {
       let msg = "Indexing Failed";
       if (e.message?.includes("quota")) {
@@ -7580,20 +8140,23 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       console.error(e);
     }
   }
-  async indexCurrentFile(file) {
+  async indexCurrentFile(file, profileId = this.settings.defaultEmbeddingProfile) {
     const target = file ?? this.app.workspace.getActiveFile();
     if (!target || target.extension !== "md") {
       new import_obsidian3.Notice("Open a Markdown note to index it.");
       return;
     }
-    this.updateStatusBar("indexing", "Indexing current note", 0);
+    const profileLabel = getEmbeddingProfileLabel(profileId);
+    this.updateStatusBar("indexing", `Indexing ${profileLabel}`, 0);
     try {
-      await this.indexer.indexFile(target);
+      await this.indexer.indexFile(target, profileId);
       await this.store.flush();
       this.updateStatusBar("complete");
       this.updateSidebar(target);
-      await this.exportWorkbenchRelatedNotes();
-      new import_obsidian3.Notice(`Indexed ${target.basename}`);
+      if (profileId === this.settings.defaultEmbeddingProfile) {
+        await this.exportWorkbenchRelatedNotes(profileId);
+      }
+      new import_obsidian3.Notice(`Indexed ${target.basename} for ${profileLabel}`);
     } catch (e) {
       const msg = e.message?.includes("429") || e.message?.includes("quota") ? "Rate limit reached" : "Indexing failed";
       this.updateStatusBar("error", msg);
@@ -7601,20 +8164,24 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       console.error(e);
     }
   }
-  async indexMissingNotes() {
-    new import_obsidian3.Notice("Indexing missing notes...");
-    this.updateStatusBar("indexing", "Finding missing notes", 0);
+  async indexMissingNotes(profileId = this.settings.defaultEmbeddingProfile) {
+    const profileLabel = getEmbeddingProfileLabel(profileId);
+    new import_obsidian3.Notice(`Indexing missing notes for ${profileLabel}...`);
+    this.updateStatusBar("indexing", `Finding missing ${profileLabel}`, 0);
     try {
-      const result = await this.indexer.indexMissingNotes((current, total) => {
+      const result = await this.indexer.indexMissingNotes(profileId, (current, total) => {
         const pct = total === 0 ? 1 : current / total;
-        this.updateStatusBar("indexing", `Missing ${current}/${total}`, pct);
+        this.updateStatusBar("indexing", `${profileLabel} ${current}/${total}`, pct);
       });
       this.updateStatusBar("complete");
       this.updateSidebar(this.app.workspace.getActiveFile());
       if (result.indexedCount === 0) {
         new import_obsidian3.Notice(`No missing notes found. ${result.skippedCount} notes already indexed.`);
       } else {
-        new import_obsidian3.Notice(`Indexed ${result.indexedCount} missing note${result.indexedCount === 1 ? "" : "s"}.`);
+        new import_obsidian3.Notice(`Indexed ${result.indexedCount} missing note${result.indexedCount === 1 ? "" : "s"} for ${profileLabel}.`);
+      }
+      if (profileId === this.settings.defaultEmbeddingProfile && result.indexedCount > 0) {
+        await this.exportWorkbenchRelatedNotes(profileId);
       }
     } catch (e) {
       const msg = e.message?.includes("429") || e.message?.includes("quota") ? "Rate limit reached" : "Missing-note indexing failed";
@@ -7622,6 +8189,22 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       new import_obsidian3.Notice(msg);
       console.error(e);
     }
+  }
+  async indexAllStoredProfiles() {
+    for (const profileId of this.settings.storedEmbeddingProfiles) {
+      await this.indexMissingNotes(profileId);
+    }
+  }
+  async clearDefaultProfileIndex() {
+    const profileId = this.settings.defaultEmbeddingProfile;
+    await this.store.clearProfile(profileId);
+    this.updateSidebar(this.app.workspace.getActiveFile());
+    new import_obsidian3.Notice(`Cleared ${getEmbeddingProfileLabel(profileId)} index.`);
+  }
+  async clearAllProfileIndexes() {
+    await this.store.clearAllProfiles();
+    this.updateSidebar(this.app.workspace.getActiveFile());
+    new import_obsidian3.Notice("Cleared all Related Notes profile indexes.");
   }
   openSettings() {
     const setting = this.app.setting;
@@ -7632,14 +8215,15 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
     setting?.open?.();
     setting?.openTabById?.(this.manifest.id);
   }
-  async exportWorkbenchRelatedNotes() {
+  async exportWorkbenchRelatedNotes(profileId = this.settings.defaultEmbeddingProfile) {
     try {
       const result = await writeWorkbenchExport({
         app: this.app,
         plugin: this,
         store: this.store,
         service: this.service,
-        limit: this.settings.relatedNotesLimit
+        limit: this.settings.relatedNotesLimit,
+        profileId
       });
       new import_obsidian3.Notice(`Workbench export ready: ${result.noteCount} notes, ${result.edgeCount} edges.`);
       console.log("[RelatedNotes] Workbench export written:", result);

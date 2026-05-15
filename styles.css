@@ -78,6 +78,19 @@
   font-style: italic;
 }
 
+.related-notes-profile-chip {
+  flex-shrink: 0;
+  max-width: 42%;
+  padding: var(--size-2-2) var(--size-2-3);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .related-notes-toolbar {
   display: flex;
   align-items: center;
@@ -211,6 +224,39 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   margin-top: 2px;
+}
+
+.related-notes-compare-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2-1);
+  margin-bottom: var(--size-4-2);
+}
+
+.related-notes-compare-heading {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-semibold);
+  padding: var(--size-2-2) var(--size-2-3);
+}
+
+.related-notes-compare-empty {
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  padding: 0 var(--size-2-3) var(--size-2-2);
+}
+
+.related-notes-compare-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--size-2-3) var(--size-2-3);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+}
+
+.related-notes-compare-row:hover {
+  background-color: var(--background-modifier-hover);
 }
 
 .related-notes-row-actions {

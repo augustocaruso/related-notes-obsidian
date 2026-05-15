@@ -13,6 +13,8 @@ test("buildWorkbenchExportPayload creates notes and ordered edges without privat
     vaultRoot: "/vault/Wiki_Medicina",
     pluginName: "related-notes-obsidian",
     pluginVersion: "0.1.0",
+    profileId: "clean_v1",
+    embeddingModel: "test-model",
     notes: [
       { path: "A.md", title: "A", contentHash: "sha256:a" },
       { path: "B.md", title: "B", contentHash: "sha256:b" },
@@ -30,6 +32,12 @@ test("buildWorkbenchExportPayload creates notes and ordered edges without privat
   });
 
   assert.equal(payload.schema, "medical-notes-workbench.related-notes-export.v1");
+  assert.deepEqual(payload.model, {
+    embedding_model: "test-model",
+    embedding_profile_id: "clean_v1",
+    embedding_profile_version: 1,
+    representation_hash_basis: "profile_cleaned_markdown",
+  });
   assert.deepEqual(payload.notes, [
     { path: "A.md", title: "A", content_hash: "sha256:a" },
     { path: "B.md", title: "B", content_hash: "sha256:b" },
@@ -89,12 +97,16 @@ test("writeWorkbenchExport writes redacted vault export with raw markdown hashes
   };
   const plugin = { manifest: { id: "related-notes-obsidian", version: "0.1.0" } };
   const store = {
-    listIndexedPaths: async () => ["Cardio/HAS.md", "Nefro/DRC.md"],
-    getNote: async (path: string) => ({ path }),
+    listIndexedPaths: async (profileId: string) => {
+      assert.equal(profileId, "clean_v1");
+      return ["Cardio/HAS.md", "Nefro/DRC.md"];
+    },
+    getNote: async (path: string, profileId: string) => ({ path, embeddingModel: "test-model", embeddingProfile: profileId }),
   };
   const service = {
-    getRelatedNotes: async (path: string, limit: number) => {
+    getRelatedNotes: async (path: string, limit: number, profileId: string) => {
       requestedLimit = limit;
+      assert.equal(profileId, "clean_v1");
       return path === "Cardio/HAS.md"
         ? {
             status: "ok",
@@ -118,6 +130,7 @@ test("writeWorkbenchExport writes redacted vault export with raw markdown hashes
     store: store as any,
     service: service as any,
     limit: 7,
+    profileId: "clean_v1",
   });
 
   const payload = JSON.parse(writtenText);
@@ -125,6 +138,7 @@ test("writeWorkbenchExport writes redacted vault export with raw markdown hashes
   assert.equal(result.path, ".obsidian/plugins/related-notes-obsidian/medical-notes-export.json");
   assert.equal(writtenPath, result.path);
   assert.equal(payload.notes[0].content_hash, `sha256:${sha256("# HAS\n\nTexto cru.")}`);
+  assert.equal(payload.model.embedding_profile_id, "clean_v1");
   assert.deepEqual(payload.edges, [
     {
       source_path: "Cardio/HAS.md",

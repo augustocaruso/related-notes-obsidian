@@ -1,8 +1,10 @@
 import type {
+  EmbeddingProfileId,
   WorkbenchRelatedEdge,
   WorkbenchRelatedNote,
   WorkbenchRelatedNotesExport,
 } from "../types";
+import { DEFAULT_EMBEDDING_PROFILE, EMBEDDING_PROFILES } from "../types";
 import { sha256 } from "../indexing/hash";
 import type { RelatedNotesService } from "../related/RelatedNotesService";
 import type { NoteVectorStore } from "../store/NoteVectorStore";
@@ -25,6 +27,8 @@ export type BuildWorkbenchExportPayloadInput = {
   vaultRoot: string;
   pluginName: string;
   pluginVersion: string;
+  profileId: EmbeddingProfileId;
+  embeddingModel: string;
   notes: ExportNoteInput[];
   relatedBySource: Map<string, RelatedInput[]>;
 };
@@ -37,6 +41,7 @@ export type WriteWorkbenchExportOptions = {
   store: NoteVectorStore;
   service: RelatedNotesService;
   limit: number;
+  profileId?: EmbeddingProfileId;
 };
 
 const FORBIDDEN_KEYS = new Set([
@@ -93,6 +98,12 @@ export function buildWorkbenchExportPayload(
       name: input.pluginName,
       version: input.pluginVersion,
     },
+    model: {
+      embedding_model: input.embeddingModel,
+      embedding_profile_id: input.profileId,
+      embedding_profile_version: EMBEDDING_PROFILES[input.profileId].version,
+      representation_hash_basis: representationHashBasis(input.profileId),
+    },
     score_scale: "0_to_1",
     notes,
     edges,
@@ -114,16 +125,19 @@ export async function writeWorkbenchExport(options: WriteWorkbenchExportOptions)
   noteCount: number;
   edgeCount: number;
 }> {
-  const indexedPaths = await options.store.listIndexedPaths();
+  const profileId = options.profileId ?? DEFAULT_EMBEDDING_PROFILE;
+  const indexedPaths = await options.store.listIndexedPaths(profileId);
   const notes: ExportNoteInput[] = [];
   const relatedBySource = new Map<string, RelatedInput[]>();
+  let embeddingModel = "";
 
   for (const path of [...indexedPaths].sort()) {
     const file = options.app.vault.getAbstractFileByPath(path);
     if (!isMarkdownFile(file)) continue;
 
-    const record = await options.store.getNote(file.path);
+    const record = await options.store.getNote(file.path, profileId);
     if (!record) continue;
+    if (!embeddingModel) embeddingModel = record.embeddingModel;
 
     const markdown = await options.app.vault.read(file);
     notes.push({
@@ -132,7 +146,7 @@ export async function writeWorkbenchExport(options: WriteWorkbenchExportOptions)
       contentHash: `sha256:${sha256(markdown)}`,
     });
 
-    const result = await options.service.getRelatedNotes(file.path, options.limit);
+    const result = await options.service.getRelatedNotes(file.path, options.limit, profileId);
     relatedBySource.set(
       file.path,
       result.status === "ok"
@@ -150,12 +164,22 @@ export async function writeWorkbenchExport(options: WriteWorkbenchExportOptions)
     vaultRoot: getVaultRoot(options.app),
     pluginName: options.plugin.manifest.id,
     pluginVersion: options.plugin.manifest.version,
+    profileId,
+    embeddingModel,
     notes,
     relatedBySource,
   });
   const path = `${options.app.vault.configDir}/plugins/${options.plugin.manifest.id}/${WORKBENCH_EXPORT_PATH}`;
   await options.app.vault.adapter.write(path, JSON.stringify(payload, null, 2));
   return { path, noteCount: payload.notes.length, edgeCount: payload.edges.length };
+}
+
+function representationHashBasis(
+  profileId: EmbeddingProfileId,
+): "profile_cleaned_markdown" | "raw_markdown" | "legacy_hybrid_markdown" {
+  if (profileId === "raw_v1") return "raw_markdown";
+  if (profileId === "legacy_v0") return "legacy_hybrid_markdown";
+  return "profile_cleaned_markdown";
 }
 
 function normalizeSha256(value: string): string {

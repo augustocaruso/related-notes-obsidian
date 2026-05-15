@@ -1,5 +1,12 @@
 import { Plugin, TFile, WorkspaceLeaf, Notice, setIcon } from "obsidian";
-import { RelatedNotesSettings, DEFAULT_SETTINGS } from "./types";
+import {
+  DEFAULT_EMBEDDING_PROFILE,
+  EMBEDDING_PROFILES,
+  EmbeddingProfileId,
+  RelatedNotesSettings,
+  getEmbeddingProfileLabel,
+  normalizeRelatedNotesSettings,
+} from "./types";
 import { RelatedNotesSettingTab } from "./settings";
 import { GeminiEmbeddingProvider } from "./embeddings/GeminiEmbeddingProvider";
 import { JsonVectorStore } from "./store/JsonVectorStore";
@@ -23,8 +30,9 @@ export default class RelatedNotesPlugin extends Plugin {
     this.statusBarItem = this.addStatusBarItem();
     this.updateStatusBar("idle");
 
-    this.store = new JsonVectorStore(this);
-    await this.store.init();
+	    this.store = new JsonVectorStore(this);
+	    await this.store.init();
+	    await this.normalizeAndPersistSettings();
 
     this.updateProvider();
     this.service = new RelatedNotesService(this.store);
@@ -137,7 +145,7 @@ export default class RelatedNotesPlugin extends Plugin {
     }
 
     console.log("[RelatedNotes] Settings after load:", data ? "Found" : "Missing");
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, data);
+    this.settings = normalizeRelatedNotesSettings(data);
     
     if (this.settings.geminiApiKey) {
         console.log(`[RelatedNotes] Gemini API Key loaded (length: ${this.settings.geminiApiKey.length})`);
@@ -146,16 +154,26 @@ export default class RelatedNotesPlugin extends Plugin {
     }
   }
 
-  async saveSettings() {
-    console.log("[RelatedNotes] Saving settings...", { 
-        keyLength: this.settings.geminiApiKey?.length || 0,
-        limit: this.settings.relatedNotesLimit,
-        embeddingRequestDelayMs: this.settings.embeddingRequestDelayMs,
-    });
-    await this.saveData(this.settings);
-    // Refresh provider if key changed
-    this.updateProvider();
-  }
+	  async saveSettings() {
+	    this.settings = normalizeRelatedNotesSettings(this.settings);
+	    console.log("[RelatedNotes] Saving settings...", {
+	        keyLength: this.settings.geminiApiKey?.length || 0,
+	        limit: this.settings.relatedNotesLimit,
+	        embeddingRequestDelayMs: this.settings.embeddingRequestDelayMs,
+	        defaultEmbeddingProfile: this.settings.defaultEmbeddingProfile,
+	    });
+	    await this.saveData(this.settings);
+	    // Refresh provider if key changed
+	    this.updateProvider();
+	    this.updateSidebar(this.app.workspace.getActiveFile());
+	  }
+
+	  private async normalizeAndPersistSettings() {
+	    const normalized = normalizeRelatedNotesSettings(this.settings);
+	    const changed = JSON.stringify(normalized) !== JSON.stringify(this.settings);
+	    this.settings = normalized;
+	    if (changed) await this.saveData(this.settings);
+	  }
 
   updateProvider() {
       console.log("[RelatedNotes] Updating embedding provider and indexer...");
@@ -193,19 +211,22 @@ export default class RelatedNotesPlugin extends Plugin {
     }
   }
 
-  async reindexVault() {
-    new Notice("Indexing vault... please wait.");
-    this.updateStatusBar("indexing", "Starting...");
-    
-    try {
-        await this.indexer.reindexVault((current, total) => {
-            const pct = current / total;
-            this.updateStatusBar("indexing", `${current}/${total}`, pct);
-        });
-        this.updateStatusBar("complete");
-        new Notice("Vault indexing complete!");
-        this.updateSidebar(this.app.workspace.getActiveFile());
-        await this.exportWorkbenchRelatedNotes();
+	  async reindexVault(profileId: EmbeddingProfileId = this.settings.defaultEmbeddingProfile) {
+	    const profileLabel = getEmbeddingProfileLabel(profileId);
+	    new Notice(`Indexing vault for ${profileLabel}... please wait.`);
+	    this.updateStatusBar("indexing", `Starting ${profileLabel}`);
+
+	    try {
+	        await this.indexer.reindexVault(profileId, (current, total) => {
+	            const pct = current / total;
+	            this.updateStatusBar("indexing", `${profileLabel} ${current}/${total}`, pct);
+	        });
+	        this.updateStatusBar("complete");
+	        new Notice(`${profileLabel} vault indexing complete!`);
+	        this.updateSidebar(this.app.workspace.getActiveFile());
+	        if (profileId === this.settings.defaultEmbeddingProfile) {
+	          await this.exportWorkbenchRelatedNotes(profileId);
+	        }
     } catch (e: any) {
         let msg = "Indexing Failed";
         if (e.message?.includes("quota")) {
@@ -220,23 +241,26 @@ export default class RelatedNotesPlugin extends Plugin {
     }
   }
 
-  async indexCurrentFile(file?: TFile | null) {
-    const target = file ?? this.app.workspace.getActiveFile();
+	  async indexCurrentFile(file?: TFile | null, profileId: EmbeddingProfileId = this.settings.defaultEmbeddingProfile) {
+	    const target = file ?? this.app.workspace.getActiveFile();
 
     if (!target || target.extension !== "md") {
       new Notice("Open a Markdown note to index it.");
       return;
     }
 
-    this.updateStatusBar("indexing", "Indexing current note", 0);
+	    const profileLabel = getEmbeddingProfileLabel(profileId);
+	    this.updateStatusBar("indexing", `Indexing ${profileLabel}`, 0);
 
-    try {
-      await this.indexer.indexFile(target);
-      await this.store.flush();
-      this.updateStatusBar("complete");
-      this.updateSidebar(target);
-      await this.exportWorkbenchRelatedNotes();
-      new Notice(`Indexed ${target.basename}`);
+	    try {
+	      await this.indexer.indexFile(target, profileId);
+	      await this.store.flush();
+	      this.updateStatusBar("complete");
+	      this.updateSidebar(target);
+	      if (profileId === this.settings.defaultEmbeddingProfile) {
+	        await this.exportWorkbenchRelatedNotes(profileId);
+	      }
+	      new Notice(`Indexed ${target.basename} for ${profileLabel}`);
     } catch (e: any) {
       const msg = e.message?.includes("429") || e.message?.includes("quota")
         ? "Rate limit reached"
@@ -247,35 +271,58 @@ export default class RelatedNotesPlugin extends Plugin {
     }
   }
 
-  async indexMissingNotes() {
-    new Notice("Indexing missing notes...");
-    this.updateStatusBar("indexing", "Finding missing notes", 0);
+	  async indexMissingNotes(profileId: EmbeddingProfileId = this.settings.defaultEmbeddingProfile) {
+	    const profileLabel = getEmbeddingProfileLabel(profileId);
+	    new Notice(`Indexing missing notes for ${profileLabel}...`);
+	    this.updateStatusBar("indexing", `Finding missing ${profileLabel}`, 0);
 
-    try {
-      const result = await this.indexer.indexMissingNotes((current, total) => {
-        const pct = total === 0 ? 1 : current / total;
-        this.updateStatusBar("indexing", `Missing ${current}/${total}`, pct);
-      });
+	    try {
+	      const result = await this.indexer.indexMissingNotes(profileId, (current, total) => {
+	        const pct = total === 0 ? 1 : current / total;
+	        this.updateStatusBar("indexing", `${profileLabel} ${current}/${total}`, pct);
+	      });
 
       this.updateStatusBar("complete");
       this.updateSidebar(this.app.workspace.getActiveFile());
 
       if (result.indexedCount === 0) {
-        new Notice(`No missing notes found. ${result.skippedCount} notes already indexed.`);
-      } else {
-        new Notice(`Indexed ${result.indexedCount} missing note${result.indexedCount === 1 ? "" : "s"}.`);
-      }
+	        new Notice(`No missing notes found. ${result.skippedCount} notes already indexed.`);
+	      } else {
+	        new Notice(`Indexed ${result.indexedCount} missing note${result.indexedCount === 1 ? "" : "s"} for ${profileLabel}.`);
+	      }
+	      if (profileId === this.settings.defaultEmbeddingProfile && result.indexedCount > 0) {
+	        await this.exportWorkbenchRelatedNotes(profileId);
+	      }
     } catch (e: any) {
       const msg = e.message?.includes("429") || e.message?.includes("quota")
         ? "Rate limit reached"
         : "Missing-note indexing failed";
-      this.updateStatusBar("error", msg);
-      new Notice(msg);
-      console.error(e);
-    }
-  }
+	      this.updateStatusBar("error", msg);
+	      new Notice(msg);
+	      console.error(e);
+		  }
+	  }
 
-  openSettings() {
+		  async indexAllStoredProfiles() {
+	    for (const profileId of this.settings.storedEmbeddingProfiles) {
+	      await this.indexMissingNotes(profileId);
+	    }
+	  }
+
+	  async clearDefaultProfileIndex() {
+	    const profileId = this.settings.defaultEmbeddingProfile;
+	    await this.store.clearProfile(profileId);
+	    this.updateSidebar(this.app.workspace.getActiveFile());
+	    new Notice(`Cleared ${getEmbeddingProfileLabel(profileId)} index.`);
+	  }
+
+	  async clearAllProfileIndexes() {
+	    await this.store.clearAllProfiles();
+		    this.updateSidebar(this.app.workspace.getActiveFile());
+		    new Notice("Cleared all Related Notes profile indexes.");
+		  }
+
+	  openSettings() {
     const setting = (this.app as any).setting;
     if (!setting?.open || !setting?.openTabById) {
       new Notice("Open Obsidian settings, then Related Notes, to configure this plugin.");
@@ -286,15 +333,16 @@ export default class RelatedNotesPlugin extends Plugin {
     setting?.openTabById?.(this.manifest.id);
   }
 
-  async exportWorkbenchRelatedNotes() {
-    try {
-      const result = await writeWorkbenchExport({
-        app: this.app,
-        plugin: this,
-        store: this.store,
-        service: this.service,
-        limit: this.settings.relatedNotesLimit,
-      });
+	  async exportWorkbenchRelatedNotes(profileId: EmbeddingProfileId = this.settings.defaultEmbeddingProfile) {
+	    try {
+	      const result = await writeWorkbenchExport({
+	        app: this.app,
+	        plugin: this,
+	        store: this.store,
+	        service: this.service,
+	        limit: this.settings.relatedNotesLimit,
+	        profileId,
+	      });
       new Notice(`Workbench export ready: ${result.noteCount} notes, ${result.edgeCount} edges.`);
       console.log("[RelatedNotes] Workbench export written:", result);
     } catch (e) {

@@ -34,7 +34,10 @@ test("indexMissingNotes embeds only notes absent from the local index", async ()
     },
   };
   const store = {
-    listIndexedPaths: async () => ["A.md", "Folder/C.md"],
+    listIndexedPaths: async (profileId: string) => {
+      assert.equal(profileId, "clean_v1");
+      return ["A.md", "Folder/C.md"];
+    },
     upsertNote: async (record: { path: string }) => {
       upsertedPaths.push(record.path);
     },
@@ -50,7 +53,7 @@ test("indexMissingNotes embeds only notes absent from the local index", async ()
   };
 
   const indexer = new VaultIndexer(app as any, store as any, embeddingProvider as any);
-  const result = await indexer.indexMissingNotes((current, total) => progress.push([current, total]));
+  const result = await indexer.indexMissingNotes("clean_v1", (current, total) => progress.push([current, total]));
 
   assert.deepEqual(readPaths, ["B.md"]);
   assert.deepEqual(upsertedPaths, ["B.md"]);
@@ -87,7 +90,36 @@ test("indexMissingNotes uses configured delay instead of a hardcoded five second
     },
   });
 
-  await indexer.indexMissingNotes();
+  await indexer.indexMissingNotes("clean_v1");
 
   assert.deepEqual(sleepCalls, [25]);
+});
+
+test("indexMissingNotes treats missing notes per profile instead of per path globally", async () => {
+  const files = [makeFile("A.md", "# A"), makeFile("B.md", "# B")];
+  const upserted: Array<{ path: string; profile: string }> = [];
+  const app = {
+    vault: {
+      getMarkdownFiles: () => files,
+      read: async (file: { markdown: string }) => file.markdown,
+    },
+  };
+  const store = {
+    listIndexedPaths: async (profileId: string) => profileId === "clean_v1" ? ["A.md"] : ["A.md", "B.md"],
+    upsertNote: async (record: { path: string; embeddingProfile: string }) => {
+      upserted.push({ path: record.path, profile: record.embeddingProfile });
+    },
+    flush: async () => undefined,
+  };
+  const embeddingProvider = {
+    model: "test-model",
+    apiKey: "test-key",
+    embed: async () => [0.1, 0.2, 0.3],
+  };
+
+  const indexer = new VaultIndexer(app as any, store as any, embeddingProvider as any);
+  const result = await indexer.indexMissingNotes("clean_v1");
+
+  assert.deepEqual(upserted, [{ path: "B.md", profile: "clean_v1" }]);
+  assert.equal(result.indexedCount, 1);
 });

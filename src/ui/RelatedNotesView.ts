@@ -10,7 +10,12 @@ import {
 } from "obsidian";
 import type RelatedNotesPlugin from "../main";
 import { RelatedNotesService } from "../related/RelatedNotesService";
-import { NoteVectorRecord } from "../types";
+import {
+  EmbeddingProfileId,
+  NoteVectorRecord,
+  getEmbeddingProfileLabel,
+} from "../types";
+import { compareProfileResults, ComparedRelatedNote } from "./profileComparison";
 import { formatScore, getScoreTone, pathToWikilink } from "./viewHelpers";
 
 export const RELATED_NOTES_VIEW_TYPE = "related-notes-view";
@@ -101,49 +106,14 @@ export class RelatedNotesView extends ItemView {
       return;
     }
 
-    const skeleton = this.renderSkeleton(container);
-
-    const result = await this.service.getRelatedNotes(
-      this.currentFile.path,
-      this.plugin.settings.relatedNotesLimit
-    );
-
-    if (token !== this.renderToken) return;
-    skeleton.remove();
-
-    if (result.status === "not_indexed") {
-      this.renderState(container, {
-        icon: "scan-search",
-        title: "This note is not indexed yet",
-        description: "Index this note now, or reindex the vault to refresh all related-note data.",
-        primaryAction: { label: "Index this note", onClick: () => this.plugin.indexCurrentFile(this.currentFile) },
-        secondaryAction: { label: "Reindex vault", onClick: () => this.plugin.reindexVault() },
-      });
-      return;
+    if (this.plugin.settings.sidebarProfileMode === "compare") {
+      await this.renderCompareMode(container, token);
+    } else {
+      const profileId = this.plugin.settings.sidebarProfileMode === "single"
+        ? this.plugin.settings.sidebarSelectedProfile
+        : this.plugin.settings.defaultEmbeddingProfile;
+      await this.renderSingleProfileMode(container, token, profileId);
     }
-
-    if (result.status === "error") {
-      this.renderState(container, {
-        icon: "alert-triangle",
-        title: "Could not load related notes",
-        description: "Try refreshing the panel or rebuilding the index.",
-        primaryAction: { label: "Retry", onClick: () => this.updateView() },
-        secondaryAction: { label: "Reindex vault", onClick: () => this.plugin.reindexVault() },
-      });
-      return;
-    }
-
-    if (result.notes.length === 0) {
-      this.renderState(container, {
-        icon: "search-x",
-        title: "No related notes found",
-        description: "The current note is indexed, but no similar notes were found.",
-        primaryAction: { label: "Refresh", onClick: () => this.updateView() },
-      });
-      return;
-    }
-
-    this.renderResults(container, result.notes);
   }
 
   private renderHeader(container: HTMLElement) {
@@ -166,9 +136,12 @@ export class RelatedNotesView extends ItemView {
       text: this.currentFile ? this.currentFile.basename : "No active note",
       cls: "related-notes-context-chip-text",
     });
-    if (!this.currentFile) chip.addClass("is-empty");
+	    if (!this.currentFile) chip.addClass("is-empty");
 
-    const contextActions = contextBar.createDiv({ cls: "related-notes-toolbar" });
+    const profileChip = contextBar.createDiv({ cls: "related-notes-profile-chip" });
+    profileChip.setText(this.getProfileContextLabel());
+
+	    const contextActions = contextBar.createDiv({ cls: "related-notes-toolbar" });
     this.addIconButton(contextActions, "refresh-cw", "Refresh results", () => this.updateView());
     this.addIconButton(contextActions, "more-horizontal", "More actions", (event) =>
       this.openOverflowMenu(event)
@@ -177,13 +150,13 @@ export class RelatedNotesView extends ItemView {
 
   private openOverflowMenu(event: MouseEvent | undefined) {
     const menu = new Menu();
-    menu.addItem((item) =>
-      item
-        .setTitle("Index current note")
-        .setIcon("scan-search")
-        .setDisabled(!this.currentFile)
-        .onClick(() => this.plugin.indexCurrentFile(this.currentFile))
-    );
+	    menu.addItem((item) =>
+	      item
+	        .setTitle("Index current note")
+	        .setIcon("scan-search")
+	        .setDisabled(!this.currentFile)
+	        .onClick(() => this.plugin.indexCurrentFile(this.currentFile, this.plugin.settings.defaultEmbeddingProfile))
+	    );
     menu.addItem((item) =>
       item
         .setTitle("Index missing notes")
@@ -201,10 +174,121 @@ export class RelatedNotesView extends ItemView {
       menu.showAtMouseEvent(event);
     } else {
       menu.showAtPosition({ x: 0, y: 0 });
-    }
+		}
   }
 
-  private renderResults(container: HTMLElement, notes: RelatedNoteResult[]) {
+  private async renderSingleProfileMode(container: HTMLElement, token: number, profileId: EmbeddingProfileId) {
+    if (!this.service || !this.currentFile) return;
+    const skeleton = this.renderSkeleton(container);
+    const result = await this.service.getRelatedNotes(
+      this.currentFile.path,
+      this.plugin.settings.relatedNotesLimit,
+      profileId,
+    );
+
+    if (token !== this.renderToken) return;
+    skeleton.remove();
+
+    if (this.renderProfileResultState(container, result.status, profileId)) return;
+
+    if (result.notes.length === 0) {
+      this.renderState(container, {
+        icon: "search-x",
+        title: "No related notes found",
+        description: `The current note is indexed for ${getEmbeddingProfileLabel(profileId)}, but no similar notes were found.`,
+        primaryAction: { label: "Refresh", onClick: () => this.updateView() },
+      });
+      return;
+    }
+
+    this.renderResults(container, result.notes);
+  }
+
+  private async renderCompareMode(container: HTMLElement, token: number) {
+    if (!this.service || !this.currentFile) return;
+    const leftProfile = this.plugin.settings.sidebarCompareLeftProfile;
+    const rightProfile = this.plugin.settings.sidebarCompareRightProfile;
+    const skeleton = this.renderSkeleton(container);
+    const [left, right] = await Promise.all([
+      this.service.getRelatedNotes(this.currentFile.path, this.plugin.settings.relatedNotesLimit, leftProfile),
+      this.service.getRelatedNotes(this.currentFile.path, this.plugin.settings.relatedNotesLimit, rightProfile),
+    ]);
+
+    if (token !== this.renderToken) return;
+    skeleton.remove();
+
+    const missingProfile = left.status === "not_indexed"
+      ? leftProfile
+      : right.status === "not_indexed"
+        ? rightProfile
+        : null;
+    if (missingProfile) {
+      this.renderState(container, {
+        icon: "scan-search",
+        title: `${getEmbeddingProfileLabel(missingProfile)} is not indexed yet`,
+        description: "Index this note or missing notes for that profile before comparing.",
+        primaryAction: {
+          label: "Index this note",
+          onClick: () => this.plugin.indexCurrentFile(this.currentFile, missingProfile),
+        },
+        secondaryAction: {
+          label: "Index missing notes",
+          onClick: () => this.plugin.indexMissingNotes(missingProfile),
+        },
+      });
+      return;
+    }
+
+    if (left.status === "error" || right.status === "error") {
+      this.renderState(container, {
+        icon: "alert-triangle",
+        title: "Could not compare profiles",
+        description: "Try refreshing the panel or rebuilding the selected profile indexes.",
+        primaryAction: { label: "Retry", onClick: () => this.updateView() },
+      });
+      return;
+    }
+
+    const comparison = compareProfileResults(left.notes, right.notes);
+    const summary = container.createDiv({ cls: "related-notes-summary" });
+    summary.setText(`${getEmbeddingProfileLabel(leftProfile)} vs ${getEmbeddingProfileLabel(rightProfile)}`);
+    this.renderCompareSection(container, "Both profiles", comparison.both, leftProfile, rightProfile);
+    this.renderResultsSection(container, `Only in ${getEmbeddingProfileLabel(leftProfile)}`, comparison.leftOnly);
+    this.renderResultsSection(container, `Only in ${getEmbeddingProfileLabel(rightProfile)}`, comparison.rightOnly);
+    this.renderCompareSection(container, "Rank changed", comparison.rankChanged, leftProfile, rightProfile);
+  }
+
+  private renderProfileResultState(
+    container: HTMLElement,
+    status: "ok" | "not_indexed" | "error",
+    profileId: EmbeddingProfileId,
+  ): boolean {
+    if (status === "not_indexed") {
+      this.renderState(container, {
+        icon: "scan-search",
+        title: `This note is not indexed for ${getEmbeddingProfileLabel(profileId)}`,
+        description: "Index this note now, or index missing notes for this profile.",
+        primaryAction: { label: "Index this note", onClick: () => this.plugin.indexCurrentFile(this.currentFile, profileId) },
+        secondaryAction: { label: "Index missing notes", onClick: () => this.plugin.indexMissingNotes(profileId) },
+      });
+      return true;
+    }
+
+    if (status === "error") {
+      this.renderState(container, {
+        icon: "alert-triangle",
+        title: "Could not load related notes",
+        description: "Try refreshing the panel or rebuilding the index.",
+        primaryAction: { label: "Retry", onClick: () => this.updateView() },
+        secondaryAction: { label: "Reindex profile", onClick: () => this.plugin.reindexVault(profileId) },
+      });
+      return true;
+    }
+
+    return false;
+  }
+
+		  private renderResults(container: HTMLElement, notes: RelatedNoteResult[]) {
     const summary = container.createDiv({ cls: "related-notes-summary" });
     summary.setText(`${notes.length} related note${notes.length === 1 ? "" : "s"}`);
 
@@ -212,7 +296,70 @@ export class RelatedNotesView extends ItemView {
 
     for (const note of notes) {
       this.renderResultRow(list, note);
+		  }
+  }
+
+  private renderResultsSection(
+    container: HTMLElement,
+    title: string,
+    notes: Array<{ path: string; title: string; score: number }>,
+  ) {
+    const section = container.createDiv({ cls: "related-notes-compare-section" });
+    section.createDiv({ text: `${title} (${notes.length})`, cls: "related-notes-compare-heading" });
+    if (notes.length === 0) {
+      section.createDiv({ text: "No notes", cls: "related-notes-compare-empty" });
+      return;
     }
+    for (const note of notes) this.renderSimpleResultRow(section, note);
+  }
+
+  private renderCompareSection(
+    container: HTMLElement,
+    title: string,
+    notes: ComparedRelatedNote[],
+    leftProfile: EmbeddingProfileId,
+    rightProfile: EmbeddingProfileId,
+  ) {
+    const section = container.createDiv({ cls: "related-notes-compare-section" });
+    section.createDiv({ text: `${title} (${notes.length})`, cls: "related-notes-compare-heading" });
+    if (notes.length === 0) {
+      section.createDiv({ text: "No notes", cls: "related-notes-compare-empty" });
+      return;
+    }
+    for (const note of notes) {
+      const row = section.createDiv({ cls: "related-notes-compare-row" });
+      row.setAttr("role", "button");
+      row.setAttr("tabindex", "0");
+      row.addEventListener("click", (event) => {
+        const newPane = event.metaKey || event.ctrlKey;
+        this.openNote(note.path, newPane);
+      });
+      const titleLine = row.createDiv({ cls: "related-notes-row-title-line" });
+      titleLine.createDiv({ text: note.title, cls: "related-notes-row-title" });
+      titleLine.createSpan({ text: formatScore(Math.max(note.leftScore, note.rightScore)), cls: "related-notes-score-text" });
+      row.createDiv({
+        text: `${getEmbeddingProfileLabel(leftProfile)} ${formatScore(note.leftScore)} · ${getEmbeddingProfileLabel(rightProfile)} ${formatScore(note.rightScore)} · Δ ${note.scoreDelta.toFixed(2)} · rank ${note.leftRank}→${note.rightRank}`,
+        cls: "related-notes-row-meta",
+      });
+    }
+  }
+
+  private renderSimpleResultRow(
+    list: HTMLElement,
+    note: { path: string; title: string; score: number },
+  ) {
+    const row = list.createDiv({ cls: "related-notes-row" });
+    row.addClass(`is-score-${getScoreTone(note.score)}`);
+    row.setAttr("role", "button");
+    row.setAttr("tabindex", "0");
+    row.addEventListener("click", (event) => {
+      const newPane = event.metaKey || event.ctrlKey;
+      this.openNote(note.path, newPane);
+    });
+    const body = row.createDiv({ cls: "related-notes-row-body" });
+    const titleLine = body.createDiv({ cls: "related-notes-row-title-line" });
+    titleLine.createDiv({ text: note.title, cls: "related-notes-row-title" });
+    titleLine.createSpan({ text: formatScore(note.score), cls: "related-notes-score-text" });
   }
 
   private renderResultRow(list: HTMLElement, note: RelatedNoteResult) {
@@ -308,7 +455,7 @@ export class RelatedNotesView extends ItemView {
     return state;
   }
 
-  private addIconButton(
+	  private addIconButton(
     parent: HTMLElement,
     iconName: string,
     tooltip: string,
@@ -321,6 +468,17 @@ export class RelatedNotesView extends ItemView {
       onClick(event);
     });
     return btn;
+	  }
+
+  private getProfileContextLabel(): string {
+    const settings = this.plugin.settings;
+    if (settings.sidebarProfileMode === "compare") {
+      return `${getEmbeddingProfileLabel(settings.sidebarCompareLeftProfile)} vs ${getEmbeddingProfileLabel(settings.sidebarCompareRightProfile)}`;
+    }
+    if (settings.sidebarProfileMode === "single") {
+      return getEmbeddingProfileLabel(settings.sidebarSelectedProfile);
+    }
+    return getEmbeddingProfileLabel(settings.defaultEmbeddingProfile);
   }
 
   private attachWidthObserver() {

@@ -560,7 +560,7 @@ git commit -m "feat: add embedding profile settings contract"
 - [ ] Run:
 
 ```bash
-npm run test -- tests/indexing/noteRepresentation.test.ts
+npm run test
 ```
 
 - [ ] Commit with message:
@@ -750,11 +750,9 @@ git commit -m "docs: document embedding profiles"
 - Do not delete raw or legacy profile data automatically.
 - Do not make the plugin decide the Workbench threshold policy.
 
-## Open Implementation Choice
+## Implementation Decision
 
-The only meaningful implementation choice left is whether profile indexes live in one `index.json` v2 or in separate files such as `index.clean_v1.json` and `index.raw_v1.json`.
-
-Recommendation: use one `index.json` v2 with top-level `profiles`.
+Profile indexes live in one `index.json` v2 with top-level `profiles`.
 
 Reason:
 
