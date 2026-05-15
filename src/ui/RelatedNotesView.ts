@@ -2,6 +2,7 @@ import {
   ButtonComponent,
   ExtraButtonComponent,
   ItemView,
+  Menu,
   Notice,
   TFile,
   WorkspaceLeaf,
@@ -14,12 +15,15 @@ import { formatScore, getScoreTone, pathToWikilink } from "./viewHelpers";
 
 export const RELATED_NOTES_VIEW_TYPE = "related-notes-view";
 
+const NARROW_THRESHOLD_PX = 260;
+
 type RelatedNoteResult = NoteVectorRecord & { score: number };
 
 export class RelatedNotesView extends ItemView {
   private service: RelatedNotesService | null = null;
   private currentFile: TFile | null = null;
   private renderToken = 0;
+  private widthObserver: ResizeObserver | null = null;
 
   constructor(leaf: WorkspaceLeaf, private plugin: RelatedNotesPlugin) {
     super(leaf);
@@ -42,11 +46,22 @@ export class RelatedNotesView extends ItemView {
   }
 
   async onOpen() {
+    this.attachWidthObserver();
     this.updateView();
   }
 
+  async onClose() {
+    this.widthObserver?.disconnect();
+    this.widthObserver = null;
+  }
+
   setCurrentFile(file: TFile | null) {
-    this.currentFile = file?.extension === "md" ? file : null;
+    const next = file?.extension === "md" ? file : null;
+    if (next?.path !== this.currentFile?.path) {
+      const list = this.containerEl.querySelector(".related-notes-list");
+      list?.classList.add("is-fading");
+    }
+    this.currentFile = next;
     this.updateView();
   }
 
@@ -86,12 +101,7 @@ export class RelatedNotesView extends ItemView {
       return;
     }
 
-    const loading = this.renderState(container, {
-      icon: "refresh-cw",
-      title: "Loading related notes",
-      description: "Searching the local semantic index...",
-      loading: true,
-    });
+    const skeleton = this.renderSkeleton(container);
 
     const result = await this.service.getRelatedNotes(
       this.currentFile.path,
@@ -99,7 +109,7 @@ export class RelatedNotesView extends ItemView {
     );
 
     if (token !== this.renderToken) return;
-    loading.remove();
+    skeleton.remove();
 
     if (result.status === "not_indexed") {
       this.renderState(container, {
@@ -138,62 +148,127 @@ export class RelatedNotesView extends ItemView {
 
   private renderHeader(container: HTMLElement) {
     const header = container.createDiv({ cls: "related-notes-header" });
-    const titleWrap = header.createDiv({ cls: "related-notes-title-wrap" });
-    const titleRow = titleWrap.createDiv({ cls: "related-notes-title-row" });
-    const icon = titleRow.createSpan({ cls: "related-notes-title-icon" });
-    setIcon(icon, "links-coming-in");
+
+    const top = header.createDiv({ cls: "related-notes-header-top" });
+    const titleRow = top.createDiv({ cls: "related-notes-title-row" });
+    const titleIcon = titleRow.createSpan({ cls: "related-notes-title-icon" });
+    setIcon(titleIcon, "links-coming-in");
     titleRow.createEl("h4", { text: "Related Notes", cls: "related-notes-title" });
 
-    titleWrap.createDiv({
-      text: this.currentFile ? this.currentFile.basename : "No active note",
-      cls: "related-notes-subtitle",
-    });
+    const topActions = top.createDiv({ cls: "related-notes-toolbar" });
+    this.addIconButton(topActions, "settings", "Open settings", () => this.plugin.openSettings());
 
-    const toolbar = header.createDiv({ cls: "related-notes-toolbar" });
-    this.addToolbarButton(toolbar, "refresh-cw", "Refresh results", () => this.updateView());
-    this.addToolbarButton(toolbar, "scan-search", "Index current note", () => this.plugin.indexCurrentFile(this.currentFile));
-    this.addToolbarButton(toolbar, "list-plus", "Index missing notes", () => this.plugin.indexMissingNotes());
-    this.addToolbarButton(toolbar, "database-zap", "Reindex vault", () => this.plugin.reindexVault());
-    this.addToolbarButton(toolbar, "settings", "Open settings", () => this.plugin.openSettings());
+    const contextBar = header.createDiv({ cls: "related-notes-context-bar" });
+    const chip = contextBar.createDiv({ cls: "related-notes-context-chip" });
+    const chipIcon = chip.createSpan({ cls: "related-notes-context-chip-icon" });
+    setIcon(chipIcon, this.currentFile ? "file-text" : "file");
+    chip.createSpan({
+      text: this.currentFile ? this.currentFile.basename : "No active note",
+      cls: "related-notes-context-chip-text",
+    });
+    if (!this.currentFile) chip.addClass("is-empty");
+
+    const contextActions = contextBar.createDiv({ cls: "related-notes-toolbar" });
+    this.addIconButton(contextActions, "refresh-cw", "Refresh results", () => this.updateView());
+    this.addIconButton(contextActions, "more-horizontal", "More actions", (event) =>
+      this.openOverflowMenu(event)
+    );
+  }
+
+  private openOverflowMenu(event: MouseEvent | undefined) {
+    const menu = new Menu();
+    menu.addItem((item) =>
+      item
+        .setTitle("Index current note")
+        .setIcon("scan-search")
+        .setDisabled(!this.currentFile)
+        .onClick(() => this.plugin.indexCurrentFile(this.currentFile))
+    );
+    menu.addItem((item) =>
+      item
+        .setTitle("Index missing notes")
+        .setIcon("list-plus")
+        .onClick(() => this.plugin.indexMissingNotes())
+    );
+    menu.addItem((item) =>
+      item
+        .setTitle("Reindex vault")
+        .setIcon("database-zap")
+        .onClick(() => this.plugin.reindexVault())
+    );
+
+    if (event) {
+      menu.showAtMouseEvent(event);
+    } else {
+      menu.showAtPosition({ x: 0, y: 0 });
+    }
   }
 
   private renderResults(container: HTMLElement, notes: RelatedNoteResult[]) {
     const summary = container.createDiv({ cls: "related-notes-summary" });
-    summary.createSpan({ text: `${notes.length} related note${notes.length === 1 ? "" : "s"}` });
+    summary.setText(`${notes.length} related note${notes.length === 1 ? "" : "s"}`);
 
     const list = container.createDiv({ cls: "related-notes-list" });
 
     for (const note of notes) {
-      this.renderResultItem(list, note);
+      this.renderResultRow(list, note);
     }
   }
 
-  private renderResultItem(list: HTMLElement, note: RelatedNoteResult) {
-    const item = list.createDiv({ cls: "related-notes-item" });
-    item.addClass(`is-score-${getScoreTone(note.score)}`);
+  private renderResultRow(list: HTMLElement, note: RelatedNoteResult) {
+    const row = list.createDiv({ cls: "related-notes-row" });
+    row.addClass(`is-score-${getScoreTone(note.score)}`);
+    row.setAttr("role", "button");
+    row.setAttr("tabindex", "0");
+    row.setAttr("aria-label", `Open ${note.title}`);
 
-    const main = item.createDiv({ cls: "related-notes-item-main" });
-    const titleRow = main.createDiv({ cls: "related-notes-item-title-row" });
-    const title = titleRow.createEl("a", { text: note.title, cls: "related-notes-link", href: "#" });
-    title.onclick = (e) => {
-      e.preventDefault();
-      this.openNote(note.path, false);
-    };
+    row.addEventListener("click", (event) => {
+      const newPane = event.metaKey || event.ctrlKey;
+      this.openNote(note.path, newPane);
+    });
 
-    titleRow.createSpan({ text: formatScore(note.score), cls: "related-notes-score" });
+    row.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        const newPane = event.metaKey || event.ctrlKey;
+        this.openNote(note.path, newPane);
+      }
+    });
+
+    const body = row.createDiv({ cls: "related-notes-row-body" });
+    const titleLine = body.createDiv({ cls: "related-notes-row-title-line" });
+    titleLine.createDiv({ text: note.title, cls: "related-notes-row-title" });
+    titleLine.createSpan({ text: formatScore(note.score), cls: "related-notes-score-text" });
 
     if (note.folder) {
-      main.createDiv({ text: note.folder, cls: "related-notes-path" });
+      const meta = body.createDiv({ cls: "related-notes-row-meta" });
+      meta.createSpan({ text: "·", cls: "related-notes-row-meta-sep" });
+      meta.createSpan({ text: note.folder, cls: "related-notes-row-meta-folder" });
     }
 
     if (note.preview) {
-      main.createDiv({ text: note.preview, cls: "related-notes-preview" });
+      body.createDiv({ text: note.preview, cls: "related-notes-row-preview" });
     }
 
-    const actions = item.createDiv({ cls: "related-notes-item-actions" });
-    this.addToolbarButton(actions, "file-input", "Open", () => this.openNote(note.path, false));
-    this.addToolbarButton(actions, "columns-2", "Open in new pane", () => this.openNote(note.path, true));
-    this.addToolbarButton(actions, "copy", "Copy wikilink", () => this.copyWikilink(note));
+    const actions = row.createDiv({ cls: "related-notes-row-actions" });
+    this.addIconButton(actions, "columns-2", "Open in new pane", (event) => {
+      event?.stopPropagation();
+      this.openNote(note.path, true);
+    });
+    this.addIconButton(actions, "copy", "Copy wikilink", (event) => {
+      event?.stopPropagation();
+      this.copyWikilink(note);
+    });
+  }
+
+  private renderSkeleton(container: HTMLElement): HTMLElement {
+    const wrapper = container.createDiv({ cls: "related-notes-skeleton" });
+    for (let i = 0; i < 3; i++) {
+      const row = wrapper.createDiv({ cls: "related-notes-skeleton-row" });
+      row.createDiv({ cls: "related-notes-skeleton-bar is-medium" });
+      row.createDiv({ cls: "related-notes-skeleton-bar is-short" });
+    }
+    return wrapper;
   }
 
   private renderState(
@@ -202,16 +277,14 @@ export class RelatedNotesView extends ItemView {
       icon: string;
       title: string;
       description: string;
-      loading?: boolean;
       primaryAction?: { label: string; onClick: () => void | Promise<void> };
       secondaryAction?: { label: string; onClick: () => void | Promise<void> };
     }
   ): HTMLElement {
     const state = container.createDiv({ cls: "related-notes-state" });
-    if (options.loading) state.addClass("is-loading");
 
-    const icon = state.createDiv({ cls: "related-notes-state-icon" });
-    setIcon(icon, options.icon);
+    const plate = state.createDiv({ cls: "related-notes-state-icon-plate" });
+    setIcon(plate, options.icon);
     state.createEl("h5", { text: options.title, cls: "related-notes-state-title" });
     state.createEl("p", { text: options.description, cls: "related-notes-state-description" });
 
@@ -235,11 +308,33 @@ export class RelatedNotesView extends ItemView {
     return state;
   }
 
-  private addToolbarButton(parent: HTMLElement, iconName: string, tooltip: string, onClick: () => void | Promise<void>) {
-    new ExtraButtonComponent(parent)
-      .setIcon(iconName)
-      .setTooltip(tooltip)
-      .onClick(onClick);
+  private addIconButton(
+    parent: HTMLElement,
+    iconName: string,
+    tooltip: string,
+    onClick: (event?: MouseEvent) => void | Promise<void>
+  ) {
+    const btn = new ExtraButtonComponent(parent).setIcon(iconName).setTooltip(tooltip);
+    btn.extraSettingsEl.setAttr("aria-label", tooltip);
+    btn.extraSettingsEl.addEventListener("click", (event) => {
+      event.stopPropagation();
+      onClick(event);
+    });
+    return btn;
+  }
+
+  private attachWidthObserver() {
+    if (typeof ResizeObserver === "undefined") return;
+    const target = this.containerEl.children[1] as HTMLElement;
+    if (!target) return;
+    this.widthObserver?.disconnect();
+    this.widthObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const width = entry.contentRect.width;
+        target.toggleClass("is-narrow", width < NARROW_THRESHOLD_PX);
+      }
+    });
+    this.widthObserver.observe(target);
   }
 
   private openNote(path: string, newPane: boolean) {

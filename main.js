@@ -35,9 +35,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// node_modules/crypto-js/core.js
+// ../../../node_modules/crypto-js/core.js
 var require_core = __commonJS({
-  "node_modules/crypto-js/core.js"(exports, module2) {
+  "../../../node_modules/crypto-js/core.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory();
@@ -643,9 +643,9 @@ var require_core = __commonJS({
   }
 });
 
-// node_modules/crypto-js/x64-core.js
+// ../../../node_modules/crypto-js/x64-core.js
 var require_x64_core = __commonJS({
-  "node_modules/crypto-js/x64-core.js"(exports, module2) {
+  "../../../node_modules/crypto-js/x64-core.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -900,9 +900,9 @@ var require_x64_core = __commonJS({
   }
 });
 
-// node_modules/crypto-js/lib-typedarrays.js
+// ../../../node_modules/crypto-js/lib-typedarrays.js
 var require_lib_typedarrays = __commonJS({
-  "node_modules/crypto-js/lib-typedarrays.js"(exports, module2) {
+  "../../../node_modules/crypto-js/lib-typedarrays.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -945,9 +945,9 @@ var require_lib_typedarrays = __commonJS({
   }
 });
 
-// node_modules/crypto-js/enc-utf16.js
+// ../../../node_modules/crypto-js/enc-utf16.js
 var require_enc_utf16 = __commonJS({
-  "node_modules/crypto-js/enc-utf16.js"(exports, module2) {
+  "../../../node_modules/crypto-js/enc-utf16.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -1063,9 +1063,9 @@ var require_enc_utf16 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/enc-base64.js
+// ../../../node_modules/crypto-js/enc-base64.js
 var require_enc_base64 = __commonJS({
-  "node_modules/crypto-js/enc-base64.js"(exports, module2) {
+  "../../../node_modules/crypto-js/enc-base64.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -1171,9 +1171,9 @@ var require_enc_base64 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/enc-base64url.js
+// ../../../node_modules/crypto-js/enc-base64url.js
 var require_enc_base64url = __commonJS({
-  "node_modules/crypto-js/enc-base64url.js"(exports, module2) {
+  "../../../node_modules/crypto-js/enc-base64url.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -1290,9 +1290,9 @@ var require_enc_base64url = __commonJS({
   }
 });
 
-// node_modules/crypto-js/md5.js
+// ../../../node_modules/crypto-js/md5.js
 var require_md5 = __commonJS({
-  "node_modules/crypto-js/md5.js"(exports, module2) {
+  "../../../node_modules/crypto-js/md5.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -1469,9 +1469,9 @@ var require_md5 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/sha1.js
+// ../../../node_modules/crypto-js/sha1.js
 var require_sha1 = __commonJS({
-  "node_modules/crypto-js/sha1.js"(exports, module2) {
+  "../../../node_modules/crypto-js/sha1.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -1560,9 +1560,9 @@ var require_sha1 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/sha256.js
+// ../../../node_modules/crypto-js/sha256.js
 var require_sha256 = __commonJS({
-  "node_modules/crypto-js/sha256.js"(exports, module2) {
+  "../../../node_modules/crypto-js/sha256.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -1681,9 +1681,9 @@ var require_sha256 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/sha224.js
+// ../../../node_modules/crypto-js/sha224.js
 var require_sha224 = __commonJS({
-  "node_modules/crypto-js/sha224.js"(exports, module2) {
+  "../../../node_modules/crypto-js/sha224.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_sha256());
@@ -1726,9 +1726,9 @@ var require_sha224 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/sha512.js
+// ../../../node_modules/crypto-js/sha512.js
 var require_sha512 = __commonJS({
-  "node_modules/crypto-js/sha512.js"(exports, module2) {
+  "../../../node_modules/crypto-js/sha512.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_x64_core());
@@ -2008,9 +2008,9 @@ var require_sha512 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/sha384.js
+// ../../../node_modules/crypto-js/sha384.js
 var require_sha384 = __commonJS({
-  "node_modules/crypto-js/sha384.js"(exports, module2) {
+  "../../../node_modules/crypto-js/sha384.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_x64_core(), require_sha512());
@@ -2054,9 +2054,9 @@ var require_sha384 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/sha3.js
+// ../../../node_modules/crypto-js/sha3.js
 var require_sha3 = __commonJS({
-  "node_modules/crypto-js/sha3.js"(exports, module2) {
+  "../../../node_modules/crypto-js/sha3.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_x64_core());
@@ -2256,9 +2256,9 @@ var require_sha3 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/ripemd160.js
+// ../../../node_modules/crypto-js/ripemd160.js
 var require_ripemd160 = __commonJS({
-  "node_modules/crypto-js/ripemd160.js"(exports, module2) {
+  "../../../node_modules/crypto-js/ripemd160.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -2727,9 +2727,9 @@ var require_ripemd160 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/hmac.js
+// ../../../node_modules/crypto-js/hmac.js
 var require_hmac = __commonJS({
-  "node_modules/crypto-js/hmac.js"(exports, module2) {
+  "../../../node_modules/crypto-js/hmac.js"(exports, module2) {
     (function(root, factory) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core());
@@ -2834,9 +2834,9 @@ var require_hmac = __commonJS({
   }
 });
 
-// node_modules/crypto-js/pbkdf2.js
+// ../../../node_modules/crypto-js/pbkdf2.js
 var require_pbkdf2 = __commonJS({
-  "node_modules/crypto-js/pbkdf2.js"(exports, module2) {
+  "../../../node_modules/crypto-js/pbkdf2.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_sha256(), require_hmac());
@@ -2932,9 +2932,9 @@ var require_pbkdf2 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/evpkdf.js
+// ../../../node_modules/crypto-js/evpkdf.js
 var require_evpkdf = __commonJS({
-  "node_modules/crypto-js/evpkdf.js"(exports, module2) {
+  "../../../node_modules/crypto-js/evpkdf.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_sha1(), require_hmac());
@@ -3023,9 +3023,9 @@ var require_evpkdf = __commonJS({
   }
 });
 
-// node_modules/crypto-js/cipher-core.js
+// ../../../node_modules/crypto-js/cipher-core.js
 var require_cipher_core = __commonJS({
-  "node_modules/crypto-js/cipher-core.js"(exports, module2) {
+  "../../../node_modules/crypto-js/cipher-core.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_evpkdf());
@@ -3667,9 +3667,9 @@ var require_cipher_core = __commonJS({
   }
 });
 
-// node_modules/crypto-js/mode-cfb.js
+// ../../../node_modules/crypto-js/mode-cfb.js
 var require_mode_cfb = __commonJS({
-  "node_modules/crypto-js/mode-cfb.js"(exports, module2) {
+  "../../../node_modules/crypto-js/mode-cfb.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3719,9 +3719,9 @@ var require_mode_cfb = __commonJS({
   }
 });
 
-// node_modules/crypto-js/mode-ctr.js
+// ../../../node_modules/crypto-js/mode-ctr.js
 var require_mode_ctr = __commonJS({
-  "node_modules/crypto-js/mode-ctr.js"(exports, module2) {
+  "../../../node_modules/crypto-js/mode-ctr.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3759,9 +3759,9 @@ var require_mode_ctr = __commonJS({
   }
 });
 
-// node_modules/crypto-js/mode-ctr-gladman.js
+// ../../../node_modules/crypto-js/mode-ctr-gladman.js
 var require_mode_ctr_gladman = __commonJS({
-  "node_modules/crypto-js/mode-ctr-gladman.js"(exports, module2) {
+  "../../../node_modules/crypto-js/mode-ctr-gladman.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3834,9 +3834,9 @@ var require_mode_ctr_gladman = __commonJS({
   }
 });
 
-// node_modules/crypto-js/mode-ofb.js
+// ../../../node_modules/crypto-js/mode-ofb.js
 var require_mode_ofb = __commonJS({
-  "node_modules/crypto-js/mode-ofb.js"(exports, module2) {
+  "../../../node_modules/crypto-js/mode-ofb.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3872,9 +3872,9 @@ var require_mode_ofb = __commonJS({
   }
 });
 
-// node_modules/crypto-js/mode-ecb.js
+// ../../../node_modules/crypto-js/mode-ecb.js
 var require_mode_ecb = __commonJS({
-  "node_modules/crypto-js/mode-ecb.js"(exports, module2) {
+  "../../../node_modules/crypto-js/mode-ecb.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3903,9 +3903,9 @@ var require_mode_ecb = __commonJS({
   }
 });
 
-// node_modules/crypto-js/pad-ansix923.js
+// ../../../node_modules/crypto-js/pad-ansix923.js
 var require_pad_ansix923 = __commonJS({
-  "node_modules/crypto-js/pad-ansix923.js"(exports, module2) {
+  "../../../node_modules/crypto-js/pad-ansix923.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3935,9 +3935,9 @@ var require_pad_ansix923 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/pad-iso10126.js
+// ../../../node_modules/crypto-js/pad-iso10126.js
 var require_pad_iso10126 = __commonJS({
-  "node_modules/crypto-js/pad-iso10126.js"(exports, module2) {
+  "../../../node_modules/crypto-js/pad-iso10126.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3963,9 +3963,9 @@ var require_pad_iso10126 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/pad-iso97971.js
+// ../../../node_modules/crypto-js/pad-iso97971.js
 var require_pad_iso97971 = __commonJS({
-  "node_modules/crypto-js/pad-iso97971.js"(exports, module2) {
+  "../../../node_modules/crypto-js/pad-iso97971.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -3990,9 +3990,9 @@ var require_pad_iso97971 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/pad-zeropadding.js
+// ../../../node_modules/crypto-js/pad-zeropadding.js
 var require_pad_zeropadding = __commonJS({
-  "node_modules/crypto-js/pad-zeropadding.js"(exports, module2) {
+  "../../../node_modules/crypto-js/pad-zeropadding.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -4024,9 +4024,9 @@ var require_pad_zeropadding = __commonJS({
   }
 });
 
-// node_modules/crypto-js/pad-nopadding.js
+// ../../../node_modules/crypto-js/pad-nopadding.js
 var require_pad_nopadding = __commonJS({
-  "node_modules/crypto-js/pad-nopadding.js"(exports, module2) {
+  "../../../node_modules/crypto-js/pad-nopadding.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -4047,9 +4047,9 @@ var require_pad_nopadding = __commonJS({
   }
 });
 
-// node_modules/crypto-js/format-hex.js
+// ../../../node_modules/crypto-js/format-hex.js
 var require_format_hex = __commonJS({
-  "node_modules/crypto-js/format-hex.js"(exports, module2) {
+  "../../../node_modules/crypto-js/format-hex.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_cipher_core());
@@ -4107,9 +4107,9 @@ var require_format_hex = __commonJS({
   }
 });
 
-// node_modules/crypto-js/aes.js
+// ../../../node_modules/crypto-js/aes.js
 var require_aes = __commonJS({
-  "node_modules/crypto-js/aes.js"(exports, module2) {
+  "../../../node_modules/crypto-js/aes.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_enc_base64(), require_md5(), require_evpkdf(), require_cipher_core());
@@ -4261,9 +4261,9 @@ var require_aes = __commonJS({
   }
 });
 
-// node_modules/crypto-js/tripledes.js
+// ../../../node_modules/crypto-js/tripledes.js
 var require_tripledes = __commonJS({
-  "node_modules/crypto-js/tripledes.js"(exports, module2) {
+  "../../../node_modules/crypto-js/tripledes.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_enc_base64(), require_md5(), require_evpkdf(), require_cipher_core());
@@ -5042,9 +5042,9 @@ var require_tripledes = __commonJS({
   }
 });
 
-// node_modules/crypto-js/rc4.js
+// ../../../node_modules/crypto-js/rc4.js
 var require_rc4 = __commonJS({
-  "node_modules/crypto-js/rc4.js"(exports, module2) {
+  "../../../node_modules/crypto-js/rc4.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_enc_base64(), require_md5(), require_evpkdf(), require_cipher_core());
@@ -5125,9 +5125,9 @@ var require_rc4 = __commonJS({
   }
 });
 
-// node_modules/crypto-js/rabbit.js
+// ../../../node_modules/crypto-js/rabbit.js
 var require_rabbit = __commonJS({
-  "node_modules/crypto-js/rabbit.js"(exports, module2) {
+  "../../../node_modules/crypto-js/rabbit.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_enc_base64(), require_md5(), require_evpkdf(), require_cipher_core());
@@ -5254,9 +5254,9 @@ var require_rabbit = __commonJS({
   }
 });
 
-// node_modules/crypto-js/rabbit-legacy.js
+// ../../../node_modules/crypto-js/rabbit-legacy.js
 var require_rabbit_legacy = __commonJS({
-  "node_modules/crypto-js/rabbit-legacy.js"(exports, module2) {
+  "../../../node_modules/crypto-js/rabbit-legacy.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_enc_base64(), require_md5(), require_evpkdf(), require_cipher_core());
@@ -5380,9 +5380,9 @@ var require_rabbit_legacy = __commonJS({
   }
 });
 
-// node_modules/crypto-js/blowfish.js
+// ../../../node_modules/crypto-js/blowfish.js
 var require_blowfish = __commonJS({
-  "node_modules/crypto-js/blowfish.js"(exports, module2) {
+  "../../../node_modules/crypto-js/blowfish.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_enc_base64(), require_md5(), require_evpkdf(), require_cipher_core());
@@ -6569,9 +6569,9 @@ var require_blowfish = __commonJS({
   }
 });
 
-// node_modules/crypto-js/index.js
+// ../../../node_modules/crypto-js/index.js
 var require_crypto_js = __commonJS({
-  "node_modules/crypto-js/index.js"(exports, module2) {
+  "../../../node_modules/crypto-js/index.js"(exports, module2) {
     (function(root, factory, undef) {
       if (typeof exports === "object") {
         module2.exports = exports = factory(require_core(), require_x64_core(), require_lib_typedarrays(), require_enc_utf16(), require_enc_base64(), require_enc_base64url(), require_md5(), require_sha1(), require_sha256(), require_sha224(), require_sha512(), require_sha384(), require_sha3(), require_ripemd160(), require_hmac(), require_pbkdf2(), require_evpkdf(), require_cipher_core(), require_mode_cfb(), require_mode_ctr(), require_mode_ctr_gladman(), require_mode_ofb(), require_mode_ecb(), require_pad_ansix923(), require_pad_iso10126(), require_pad_iso97971(), require_pad_zeropadding(), require_pad_nopadding(), require_format_hex(), require_aes(), require_tripledes(), require_rc4(), require_rabbit(), require_rabbit_legacy(), require_blowfish());
@@ -7001,6 +7001,7 @@ function pathToWikilink(path, title) {
 
 // src/ui/RelatedNotesView.ts
 var RELATED_NOTES_VIEW_TYPE = "related-notes-view";
+var NARROW_THRESHOLD_PX = 260;
 var RelatedNotesView = class extends import_obsidian2.ItemView {
   constructor(leaf, plugin) {
     super(leaf);
@@ -7009,6 +7010,7 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
   service = null;
   currentFile = null;
   renderToken = 0;
+  widthObserver = null;
   getViewType() {
     return RELATED_NOTES_VIEW_TYPE;
   }
@@ -7022,10 +7024,20 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
     this.service = service;
   }
   async onOpen() {
+    this.attachWidthObserver();
     this.updateView();
   }
+  async onClose() {
+    this.widthObserver?.disconnect();
+    this.widthObserver = null;
+  }
   setCurrentFile(file) {
-    this.currentFile = file?.extension === "md" ? file : null;
+    const next = file?.extension === "md" ? file : null;
+    if (next?.path !== this.currentFile?.path) {
+      const list = this.containerEl.querySelector(".related-notes-list");
+      list?.classList.add("is-fading");
+    }
+    this.currentFile = next;
     this.updateView();
   }
   async updateView() {
@@ -7059,19 +7071,14 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
       });
       return;
     }
-    const loading = this.renderState(container, {
-      icon: "refresh-cw",
-      title: "Loading related notes",
-      description: "Searching the local semantic index...",
-      loading: true
-    });
+    const skeleton = this.renderSkeleton(container);
     const result = await this.service.getRelatedNotes(
       this.currentFile.path,
       this.plugin.settings.relatedNotesLimit
     );
     if (token !== this.renderToken)
       return;
-    loading.remove();
+    skeleton.remove();
     if (result.status === "not_indexed") {
       this.renderState(container, {
         icon: "scan-search",
@@ -7105,58 +7112,109 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
   }
   renderHeader(container) {
     const header = container.createDiv({ cls: "related-notes-header" });
-    const titleWrap = header.createDiv({ cls: "related-notes-title-wrap" });
-    const titleRow = titleWrap.createDiv({ cls: "related-notes-title-row" });
-    const icon = titleRow.createSpan({ cls: "related-notes-title-icon" });
-    (0, import_obsidian2.setIcon)(icon, "links-coming-in");
+    const top = header.createDiv({ cls: "related-notes-header-top" });
+    const titleRow = top.createDiv({ cls: "related-notes-title-row" });
+    const titleIcon = titleRow.createSpan({ cls: "related-notes-title-icon" });
+    (0, import_obsidian2.setIcon)(titleIcon, "links-coming-in");
     titleRow.createEl("h4", { text: "Related Notes", cls: "related-notes-title" });
-    titleWrap.createDiv({
+    const topActions = top.createDiv({ cls: "related-notes-toolbar" });
+    this.addIconButton(topActions, "settings", "Open settings", () => this.plugin.openSettings());
+    const contextBar = header.createDiv({ cls: "related-notes-context-bar" });
+    const chip = contextBar.createDiv({ cls: "related-notes-context-chip" });
+    const chipIcon = chip.createSpan({ cls: "related-notes-context-chip-icon" });
+    (0, import_obsidian2.setIcon)(chipIcon, this.currentFile ? "file-text" : "file");
+    chip.createSpan({
       text: this.currentFile ? this.currentFile.basename : "No active note",
-      cls: "related-notes-subtitle"
+      cls: "related-notes-context-chip-text"
     });
-    const toolbar = header.createDiv({ cls: "related-notes-toolbar" });
-    this.addToolbarButton(toolbar, "refresh-cw", "Refresh results", () => this.updateView());
-    this.addToolbarButton(toolbar, "scan-search", "Index current note", () => this.plugin.indexCurrentFile(this.currentFile));
-    this.addToolbarButton(toolbar, "list-plus", "Index missing notes", () => this.plugin.indexMissingNotes());
-    this.addToolbarButton(toolbar, "database-zap", "Reindex vault", () => this.plugin.reindexVault());
-    this.addToolbarButton(toolbar, "settings", "Open settings", () => this.plugin.openSettings());
+    if (!this.currentFile)
+      chip.addClass("is-empty");
+    const contextActions = contextBar.createDiv({ cls: "related-notes-toolbar" });
+    this.addIconButton(contextActions, "refresh-cw", "Refresh results", () => this.updateView());
+    this.addIconButton(
+      contextActions,
+      "more-horizontal",
+      "More actions",
+      (event) => this.openOverflowMenu(event)
+    );
+  }
+  openOverflowMenu(event) {
+    const menu = new import_obsidian2.Menu();
+    menu.addItem(
+      (item) => item.setTitle("Index current note").setIcon("scan-search").setDisabled(!this.currentFile).onClick(() => this.plugin.indexCurrentFile(this.currentFile))
+    );
+    menu.addItem(
+      (item) => item.setTitle("Index missing notes").setIcon("list-plus").onClick(() => this.plugin.indexMissingNotes())
+    );
+    menu.addItem(
+      (item) => item.setTitle("Reindex vault").setIcon("database-zap").onClick(() => this.plugin.reindexVault())
+    );
+    if (event) {
+      menu.showAtMouseEvent(event);
+    } else {
+      menu.showAtPosition({ x: 0, y: 0 });
+    }
   }
   renderResults(container, notes) {
     const summary = container.createDiv({ cls: "related-notes-summary" });
-    summary.createSpan({ text: `${notes.length} related note${notes.length === 1 ? "" : "s"}` });
+    summary.setText(`${notes.length} related note${notes.length === 1 ? "" : "s"}`);
     const list = container.createDiv({ cls: "related-notes-list" });
     for (const note of notes) {
-      this.renderResultItem(list, note);
+      this.renderResultRow(list, note);
     }
   }
-  renderResultItem(list, note) {
-    const item = list.createDiv({ cls: "related-notes-item" });
-    item.addClass(`is-score-${getScoreTone(note.score)}`);
-    const main = item.createDiv({ cls: "related-notes-item-main" });
-    const titleRow = main.createDiv({ cls: "related-notes-item-title-row" });
-    const title = titleRow.createEl("a", { text: note.title, cls: "related-notes-link", href: "#" });
-    title.onclick = (e) => {
-      e.preventDefault();
-      this.openNote(note.path, false);
-    };
-    titleRow.createSpan({ text: formatScore(note.score), cls: "related-notes-score" });
+  renderResultRow(list, note) {
+    const row = list.createDiv({ cls: "related-notes-row" });
+    row.addClass(`is-score-${getScoreTone(note.score)}`);
+    row.setAttr("role", "button");
+    row.setAttr("tabindex", "0");
+    row.setAttr("aria-label", `Open ${note.title}`);
+    row.addEventListener("click", (event) => {
+      const newPane = event.metaKey || event.ctrlKey;
+      this.openNote(note.path, newPane);
+    });
+    row.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        const newPane = event.metaKey || event.ctrlKey;
+        this.openNote(note.path, newPane);
+      }
+    });
+    const body = row.createDiv({ cls: "related-notes-row-body" });
+    const titleLine = body.createDiv({ cls: "related-notes-row-title-line" });
+    titleLine.createDiv({ text: note.title, cls: "related-notes-row-title" });
+    titleLine.createSpan({ text: formatScore(note.score), cls: "related-notes-score-text" });
     if (note.folder) {
-      main.createDiv({ text: note.folder, cls: "related-notes-path" });
+      const meta = body.createDiv({ cls: "related-notes-row-meta" });
+      meta.createSpan({ text: "\xB7", cls: "related-notes-row-meta-sep" });
+      meta.createSpan({ text: note.folder, cls: "related-notes-row-meta-folder" });
     }
     if (note.preview) {
-      main.createDiv({ text: note.preview, cls: "related-notes-preview" });
+      body.createDiv({ text: note.preview, cls: "related-notes-row-preview" });
     }
-    const actions = item.createDiv({ cls: "related-notes-item-actions" });
-    this.addToolbarButton(actions, "file-input", "Open", () => this.openNote(note.path, false));
-    this.addToolbarButton(actions, "columns-2", "Open in new pane", () => this.openNote(note.path, true));
-    this.addToolbarButton(actions, "copy", "Copy wikilink", () => this.copyWikilink(note));
+    const actions = row.createDiv({ cls: "related-notes-row-actions" });
+    this.addIconButton(actions, "columns-2", "Open in new pane", (event) => {
+      event?.stopPropagation();
+      this.openNote(note.path, true);
+    });
+    this.addIconButton(actions, "copy", "Copy wikilink", (event) => {
+      event?.stopPropagation();
+      this.copyWikilink(note);
+    });
+  }
+  renderSkeleton(container) {
+    const wrapper = container.createDiv({ cls: "related-notes-skeleton" });
+    for (let i = 0; i < 3; i++) {
+      const row = wrapper.createDiv({ cls: "related-notes-skeleton-row" });
+      row.createDiv({ cls: "related-notes-skeleton-bar is-medium" });
+      row.createDiv({ cls: "related-notes-skeleton-bar is-short" });
+    }
+    return wrapper;
   }
   renderState(container, options) {
     const state = container.createDiv({ cls: "related-notes-state" });
-    if (options.loading)
-      state.addClass("is-loading");
-    const icon = state.createDiv({ cls: "related-notes-state-icon" });
-    (0, import_obsidian2.setIcon)(icon, options.icon);
+    const plate = state.createDiv({ cls: "related-notes-state-icon-plate" });
+    (0, import_obsidian2.setIcon)(plate, options.icon);
     state.createEl("h5", { text: options.title, cls: "related-notes-state-title" });
     state.createEl("p", { text: options.description, cls: "related-notes-state-description" });
     if (options.primaryAction || options.secondaryAction) {
@@ -7170,8 +7228,29 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
     }
     return state;
   }
-  addToolbarButton(parent, iconName, tooltip, onClick) {
-    new import_obsidian2.ExtraButtonComponent(parent).setIcon(iconName).setTooltip(tooltip).onClick(onClick);
+  addIconButton(parent, iconName, tooltip, onClick) {
+    const btn = new import_obsidian2.ExtraButtonComponent(parent).setIcon(iconName).setTooltip(tooltip);
+    btn.extraSettingsEl.setAttr("aria-label", tooltip);
+    btn.extraSettingsEl.addEventListener("click", (event) => {
+      event.stopPropagation();
+      onClick(event);
+    });
+    return btn;
+  }
+  attachWidthObserver() {
+    if (typeof ResizeObserver === "undefined")
+      return;
+    const target = this.containerEl.children[1];
+    if (!target)
+      return;
+    this.widthObserver?.disconnect();
+    this.widthObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const width = entry.contentRect.width;
+        target.toggleClass("is-narrow", width < NARROW_THRESHOLD_PX);
+      }
+    });
+    this.widthObserver.observe(target);
   }
   openNote(path, newPane) {
     this.app.workspace.openLinkText(path, "", newPane);
@@ -7384,31 +7463,36 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
   updateStatusBar(status, message, progress) {
     this.statusBarItem.empty();
     const container = this.statusBarItem.createDiv({ cls: "related-notes-status-bar" });
+    container.setAttr("aria-live", "polite");
     if (status === "indexing") {
-      const text = message || "Indexing...";
-      const progContainer = container.createDiv({ cls: "related-notes-progress-container" });
-      const bar = progContainer.createDiv({ cls: "related-notes-progress-bar" });
-      if (progress !== void 0) {
-        bar.setAttr("style", `width: ${progress * 100}%`);
+      const baseLabel = message || "Indexing";
+      const suffix = progress !== void 0 ? ` ${Math.round(progress * 100)}%` : "";
+      if (progress === void 0) {
+        container.createSpan({ cls: "related-notes-status-pulse" });
       } else {
-        container.addClass("is-loading");
+        const icon = container.createSpan({ cls: "related-notes-status-icon" });
+        (0, import_obsidian3.setIcon)(icon, "refresh-cw");
       }
-      const icon = container.createSpan({ cls: "related-notes-status-icon" });
-      (0, import_obsidian3.setIcon)(icon, "refresh-cw");
-      container.createSpan({ text, cls: "related-notes-status-text" });
+      container.createSpan({ text: `${baseLabel}${suffix}`, cls: "related-notes-status-text" });
+      container.setAttr("aria-label", `${baseLabel}${suffix}`);
     } else if (status === "error") {
       const icon = container.createSpan({ cls: "related-notes-status-icon" });
       (0, import_obsidian3.setIcon)(icon, "alert-triangle");
+      const label = message || "Related Notes error \u2014 open settings";
       container.createSpan({ text: message || "API Error", cls: "related-notes-status-text" });
       container.addClass("is-error");
+      container.addClass("is-clickable");
+      container.setAttr("aria-label", label);
+      container.addEventListener("click", () => this.openSettings());
     } else if (status === "complete") {
       const icon = container.createSpan({ cls: "related-notes-status-icon" });
       (0, import_obsidian3.setIcon)(icon, "check-circle-2");
       container.createSpan({ text: "Index ready", cls: "related-notes-status-text" });
+      container.setAttr("aria-label", "Related Notes index ready");
     } else {
       const icon = container.createSpan({ cls: "related-notes-status-icon" });
       (0, import_obsidian3.setIcon)(icon, "links-coming-in");
-      container.createSpan({ text: "Related Notes", cls: "related-notes-status-text" });
+      container.setAttr("aria-label", "Related Notes");
     }
   }
   async loadSettings() {
