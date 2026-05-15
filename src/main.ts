@@ -84,36 +84,38 @@ export default class RelatedNotesPlugin extends Plugin {
   updateStatusBar(status: "idle" | "indexing" | "error" | "complete", message?: string, progress?: number) {
     this.statusBarItem.empty();
     const container = this.statusBarItem.createDiv({ cls: "related-notes-status-bar" });
-    
+    container.setAttr("aria-live", "polite");
+
     if (status === "indexing") {
-      const text = message || "Indexing...";
-      
-      // Progress container
-      const progContainer = container.createDiv({ cls: "related-notes-progress-container" });
-      const bar = progContainer.createDiv({ cls: "related-notes-progress-bar" });
-      
-      if (progress !== undefined) {
-        bar.setAttr("style", `width: ${progress * 100}%`);
+      const baseLabel = message || "Indexing";
+      const suffix = progress !== undefined ? ` ${Math.round(progress * 100)}%` : "";
+
+      if (progress === undefined) {
+        container.createSpan({ cls: "related-notes-status-pulse" });
       } else {
-        container.addClass("is-loading");
+        const icon = container.createSpan({ cls: "related-notes-status-icon" });
+        setIcon(icon, "refresh-cw");
       }
-      
-      const icon = container.createSpan({ cls: "related-notes-status-icon" });
-      setIcon(icon, "refresh-cw");
-      container.createSpan({ text, cls: "related-notes-status-text" });
+      container.createSpan({ text: `${baseLabel}${suffix}`, cls: "related-notes-status-text" });
+      container.setAttr("aria-label", `${baseLabel}${suffix}`);
     } else if (status === "error") {
       const icon = container.createSpan({ cls: "related-notes-status-icon" });
       setIcon(icon, "alert-triangle");
+      const label = message || "Related Notes error — open settings";
       container.createSpan({ text: message || "API Error", cls: "related-notes-status-text" });
       container.addClass("is-error");
+      container.addClass("is-clickable");
+      container.setAttr("aria-label", label);
+      container.addEventListener("click", () => this.openSettings());
     } else if (status === "complete") {
       const icon = container.createSpan({ cls: "related-notes-status-icon" });
       setIcon(icon, "check-circle-2");
       container.createSpan({ text: "Index ready", cls: "related-notes-status-text" });
+      container.setAttr("aria-label", "Related Notes index ready");
     } else {
       const icon = container.createSpan({ cls: "related-notes-status-icon" });
       setIcon(icon, "links-coming-in");
-      container.createSpan({ text: "Related Notes", cls: "related-notes-status-text" });
+      container.setAttr("aria-label", "Related Notes");
     }
   }
 
