@@ -16,6 +16,22 @@ npm install
 npm run build
 ```
 
+## Medical Notes Workbench Export
+
+After a successful vault reindex or current-note index, the plugin automatically writes:
+
+```text
+.obsidian/plugins/related-notes-obsidian/medical-notes-export.json
+```
+
+This file is the stable redacted artifact consumed by Medical Notes Workbench. It contains note paths, titles, raw Markdown SHA-256 hashes, related-note scores and ranks. It does not contain vectors, previews, API keys, raw Markdown, note bodies, or plugin cache internals.
+
+You can force regeneration from the Obsidian command palette:
+
+```text
+Related Notes: Export Medical Notes Workbench related notes
+```
+
 ## Privacy
 
 Do not commit `data.json`, `index.json`, or vault-derived exports. They may contain API keys, note metadata, or generated embeddings from a private vault.

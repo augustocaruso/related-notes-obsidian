@@ -7124,6 +7124,147 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
   }
 };
 
+// src/export/WorkbenchExport.ts
+var WORKBENCH_EXPORT_PATH = "medical-notes-export.json";
+var FORBIDDEN_KEYS = /* @__PURE__ */ new Set([
+  "vector",
+  "preview",
+  "geminiApiKey",
+  "apiKey",
+  "api_key",
+  "markdown",
+  "content",
+  "body",
+  "rawMarkdown",
+  "raw_markdown",
+  "embedding",
+  "embeddings"
+]);
+function buildWorkbenchExportPayload(input) {
+  const notes = [...input.notes].sort((a, b) => a.path.localeCompare(b.path)).map((note) => ({
+    path: note.path,
+    title: note.title,
+    content_hash: normalizeSha256(note.contentHash)
+  }));
+  const notePaths = new Set(notes.map((note) => note.path));
+  const edges = [];
+  for (const source of notes) {
+    const related = [...input.relatedBySource.get(source.path) ?? []].filter((candidate) => candidate.path !== source.path).filter((candidate) => notePaths.has(candidate.path)).sort((a, b) => b.score - a.score || a.path.localeCompare(b.path));
+    related.forEach((candidate, index) => {
+      edges.push({
+        source_path: source.path,
+        target_path: candidate.path,
+        score: clampScore(candidate.score),
+        rank: index + 1,
+        source: "related-notes-obsidian"
+      });
+    });
+  }
+  const payload = {
+    schema: "medical-notes-workbench.related-notes-export.v1",
+    generated_at: input.generatedAt,
+    vault_root: input.vaultRoot,
+    plugin: {
+      name: input.pluginName,
+      version: input.pluginVersion
+    },
+    score_scale: "0_to_1",
+    notes,
+    edges
+  };
+  assertWorkbenchExportIsRedacted(payload);
+  return payload;
+}
+function assertWorkbenchExportIsRedacted(value) {
+  const path = findForbiddenKey(value);
+  if (path) {
+    throw new Error(`Workbench export contains private key: ${path}`);
+  }
+}
+async function writeWorkbenchExport(options) {
+  const indexedPaths = await options.store.listIndexedPaths();
+  const notes = [];
+  const relatedBySource = /* @__PURE__ */ new Map();
+  for (const path2 of [...indexedPaths].sort()) {
+    const file = options.app.vault.getAbstractFileByPath(path2);
+    if (!isMarkdownFile(file))
+      continue;
+    const record = await options.store.getNote(file.path);
+    if (!record)
+      continue;
+    const markdown = await options.app.vault.read(file);
+    notes.push({
+      path: file.path,
+      title: file.basename,
+      contentHash: `sha256:${sha256(markdown)}`
+    });
+    const result = await options.service.getRelatedNotes(file.path, options.limit);
+    relatedBySource.set(
+      file.path,
+      result.status === "ok" ? result.notes.map((note) => ({
+        path: note.path,
+        title: note.title,
+        score: note.score
+      })) : []
+    );
+  }
+  const payload = buildWorkbenchExportPayload({
+    generatedAt: (/* @__PURE__ */ new Date()).toISOString(),
+    vaultRoot: getVaultRoot(options.app),
+    pluginName: options.plugin.manifest.id,
+    pluginVersion: options.plugin.manifest.version,
+    notes,
+    relatedBySource
+  });
+  const path = `${options.app.vault.configDir}/plugins/${options.plugin.manifest.id}/${WORKBENCH_EXPORT_PATH}`;
+  await options.app.vault.adapter.write(path, JSON.stringify(payload, null, 2));
+  return { path, noteCount: payload.notes.length, edgeCount: payload.edges.length };
+}
+function normalizeSha256(value) {
+  const trimmed = value.trim().toLowerCase();
+  return trimmed.startsWith("sha256:") ? trimmed : `sha256:${trimmed}`;
+}
+function clampScore(value) {
+  if (!Number.isFinite(value))
+    return 0;
+  return Math.max(0, Math.min(1, value));
+}
+function isMarkdownFile(file) {
+  const maybeFile = file;
+  return Boolean(
+    maybeFile && typeof maybeFile.path === "string" && typeof maybeFile.basename === "string" && maybeFile.extension === "md"
+  );
+}
+function getVaultRoot(app) {
+  const adapter = app.vault.adapter;
+  if (typeof adapter.getBasePath === "function")
+    return adapter.getBasePath();
+  if (typeof adapter.basePath === "string")
+    return adapter.basePath;
+  return "";
+}
+function findForbiddenKey(value, prefix = "") {
+  if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i++) {
+      const found = findForbiddenKey(value[i], `${prefix}[${i}]`);
+      if (found)
+        return found;
+    }
+    return "";
+  }
+  if (value && typeof value === "object") {
+    for (const [key, item] of Object.entries(value)) {
+      const path = prefix ? `${prefix}.${key}` : key;
+      if (FORBIDDEN_KEYS.has(key))
+        return path;
+      const found = findForbiddenKey(item, path);
+      if (found)
+        return found;
+    }
+  }
+  return "";
+}
+
 // src/main.ts
 var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
   settings;
@@ -7161,6 +7302,11 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       id: "reindex-vault",
       name: "Reindex vault",
       callback: () => this.reindexVault()
+    });
+    this.addCommand({
+      id: "export-workbench-related-notes",
+      name: "Export Medical Notes Workbench related notes",
+      callback: () => this.exportWorkbenchRelatedNotes()
     });
     this.registerEvent(
       this.app.workspace.on("file-open", (file) => {
@@ -7271,6 +7417,7 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       this.updateStatusBar("complete");
       new import_obsidian3.Notice("Vault indexing complete!");
       this.updateSidebar(this.app.workspace.getActiveFile());
+      await this.exportWorkbenchRelatedNotes();
     } catch (e) {
       let msg = "Indexing Failed";
       if (e.message?.includes("quota")) {
@@ -7295,6 +7442,7 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       await this.store.flush();
       this.updateStatusBar("complete");
       this.updateSidebar(target);
+      await this.exportWorkbenchRelatedNotes();
       new import_obsidian3.Notice(`Indexed ${target.basename}`);
     } catch (e) {
       const msg = e.message?.includes("429") || e.message?.includes("quota") ? "Rate limit reached" : "Indexing failed";
@@ -7311,6 +7459,22 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
     }
     setting?.open?.();
     setting?.openTabById?.(this.manifest.id);
+  }
+  async exportWorkbenchRelatedNotes() {
+    try {
+      const result = await writeWorkbenchExport({
+        app: this.app,
+        plugin: this,
+        store: this.store,
+        service: this.service,
+        limit: this.settings.relatedNotesLimit
+      });
+      new import_obsidian3.Notice(`Workbench export ready: ${result.noteCount} notes, ${result.edgeCount} edges.`);
+      console.log("[RelatedNotes] Workbench export written:", result);
+    } catch (e) {
+      console.error("[RelatedNotes] Workbench export failed:", e);
+      new import_obsidian3.Notice("Workbench export failed. See console for details.");
+    }
   }
 };
 /*! Bundled license information:

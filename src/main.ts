@@ -6,6 +6,7 @@ import { JsonVectorStore } from "./store/JsonVectorStore";
 import { VaultIndexer } from "./indexing/VaultIndexer";
 import { RelatedNotesService } from "./related/RelatedNotesService";
 import { RelatedNotesView, RELATED_NOTES_VIEW_TYPE } from "./ui/RelatedNotesView";
+import { writeWorkbenchExport } from "./export/WorkbenchExport";
 
 export default class RelatedNotesPlugin extends Plugin {
   settings!: RelatedNotesSettings;
@@ -53,6 +54,12 @@ export default class RelatedNotesPlugin extends Plugin {
       id: "reindex-vault",
       name: "Reindex vault",
       callback: () => this.reindexVault(),
+    });
+
+    this.addCommand({
+      id: "export-workbench-related-notes",
+      name: "Export Medical Notes Workbench related notes",
+      callback: () => this.exportWorkbenchRelatedNotes(),
     });
 
     this.registerEvent(
@@ -187,6 +194,7 @@ export default class RelatedNotesPlugin extends Plugin {
         this.updateStatusBar("complete");
         new Notice("Vault indexing complete!");
         this.updateSidebar(this.app.workspace.getActiveFile());
+        await this.exportWorkbenchRelatedNotes();
     } catch (e: any) {
         let msg = "Indexing Failed";
         if (e.message?.includes("quota")) {
@@ -216,6 +224,7 @@ export default class RelatedNotesPlugin extends Plugin {
       await this.store.flush();
       this.updateStatusBar("complete");
       this.updateSidebar(target);
+      await this.exportWorkbenchRelatedNotes();
       new Notice(`Indexed ${target.basename}`);
     } catch (e: any) {
       const msg = e.message?.includes("429") || e.message?.includes("quota")
@@ -236,5 +245,22 @@ export default class RelatedNotesPlugin extends Plugin {
 
     setting?.open?.();
     setting?.openTabById?.(this.manifest.id);
+  }
+
+  async exportWorkbenchRelatedNotes() {
+    try {
+      const result = await writeWorkbenchExport({
+        app: this.app,
+        plugin: this,
+        store: this.store,
+        service: this.service,
+        limit: this.settings.relatedNotesLimit,
+      });
+      new Notice(`Workbench export ready: ${result.noteCount} notes, ${result.edgeCount} edges.`);
+      console.log("[RelatedNotes] Workbench export written:", result);
+    } catch (e) {
+      console.error("[RelatedNotes] Workbench export failed:", e);
+      new Notice("Workbench export failed. See console for details.");
+    }
   }
 }
