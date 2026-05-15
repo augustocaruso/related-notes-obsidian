@@ -57,6 +57,12 @@ export default class RelatedNotesPlugin extends Plugin {
     });
 
     this.addCommand({
+      id: "index-missing-notes",
+      name: "Index missing notes only",
+      callback: () => this.indexMissingNotes(),
+    });
+
+    this.addCommand({
       id: "export-workbench-related-notes",
       name: "Export Medical Notes Workbench related notes",
       callback: () => this.exportWorkbenchRelatedNotes(),
@@ -141,7 +147,8 @@ export default class RelatedNotesPlugin extends Plugin {
   async saveSettings() {
     console.log("[RelatedNotes] Saving settings...", { 
         keyLength: this.settings.geminiApiKey?.length || 0,
-        limit: this.settings.relatedNotesLimit 
+        limit: this.settings.relatedNotesLimit,
+        embeddingRequestDelayMs: this.settings.embeddingRequestDelayMs,
     });
     await this.saveData(this.settings);
     // Refresh provider if key changed
@@ -151,7 +158,9 @@ export default class RelatedNotesPlugin extends Plugin {
   updateProvider() {
       console.log("[RelatedNotes] Updating embedding provider and indexer...");
       this.embeddingProvider = new GeminiEmbeddingProvider(this.settings.geminiApiKey);
-      this.indexer = new VaultIndexer(this.app, this.store, this.embeddingProvider);
+      this.indexer = new VaultIndexer(this.app, this.store, this.embeddingProvider, {
+        embeddingRequestDelayMs: this.settings.embeddingRequestDelayMs,
+      });
   }
 
   async activateView() {
@@ -230,6 +239,34 @@ export default class RelatedNotesPlugin extends Plugin {
       const msg = e.message?.includes("429") || e.message?.includes("quota")
         ? "Rate limit reached"
         : "Indexing failed";
+      this.updateStatusBar("error", msg);
+      new Notice(msg);
+      console.error(e);
+    }
+  }
+
+  async indexMissingNotes() {
+    new Notice("Indexing missing notes...");
+    this.updateStatusBar("indexing", "Finding missing notes", 0);
+
+    try {
+      const result = await this.indexer.indexMissingNotes((current, total) => {
+        const pct = total === 0 ? 1 : current / total;
+        this.updateStatusBar("indexing", `Missing ${current}/${total}`, pct);
+      });
+
+      this.updateStatusBar("complete");
+      this.updateSidebar(this.app.workspace.getActiveFile());
+
+      if (result.indexedCount === 0) {
+        new Notice(`No missing notes found. ${result.skippedCount} notes already indexed.`);
+      } else {
+        new Notice(`Indexed ${result.indexedCount} missing note${result.indexedCount === 1 ? "" : "s"}.`);
+      }
+    } catch (e: any) {
+      const msg = e.message?.includes("429") || e.message?.includes("quota")
+        ? "Rate limit reached"
+        : "Missing-note indexing failed";
       this.updateStatusBar("error", msg);
       new Notice(msg);
       console.error(e);

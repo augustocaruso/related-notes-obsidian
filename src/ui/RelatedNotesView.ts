@@ -152,6 +152,7 @@ export class RelatedNotesView extends ItemView {
     const toolbar = header.createDiv({ cls: "related-notes-toolbar" });
     this.addToolbarButton(toolbar, "refresh-cw", "Refresh results", () => this.updateView());
     this.addToolbarButton(toolbar, "scan-search", "Index current note", () => this.plugin.indexCurrentFile(this.currentFile));
+    this.addToolbarButton(toolbar, "list-plus", "Index missing notes", () => this.plugin.indexMissingNotes());
     this.addToolbarButton(toolbar, "database-zap", "Reindex vault", () => this.plugin.reindexVault());
     this.addToolbarButton(toolbar, "settings", "Open settings", () => this.plugin.openSettings());
   }

@@ -6597,7 +6597,8 @@ var import_obsidian3 = require("obsidian");
 // src/types.ts
 var DEFAULT_SETTINGS = {
   geminiApiKey: "",
-  relatedNotesLimit: 10
+  relatedNotesLimit: 10,
+  embeddingRequestDelayMs: 0
 };
 
 // src/settings.ts
@@ -6624,7 +6625,18 @@ var RelatedNotesSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
+    new import_obsidian.Setting(containerEl).setName("Gemini request delay").setDesc("Optional pause between embedding requests. Keep at 0 unless Gemini returns rate-limit errors.").addSlider(
+      (slider) => slider.setLimits(0, 5e3, 250).setValue(this.plugin.settings.embeddingRequestDelayMs).setDynamicTooltip().onChange(async (value) => {
+        this.plugin.settings.embeddingRequestDelayMs = value;
+        await this.plugin.saveSettings();
+      })
+    );
     containerEl.createEl("h3", { text: "Indexing" });
+    new import_obsidian.Setting(containerEl).setName("Index Missing Notes").setDesc("Only embed Markdown notes that are not already present in the local index.").addButton(
+      (btn) => btn.setButtonText("Index Missing").onClick(async () => {
+        await this.plugin.indexMissingNotes();
+      })
+    );
     new import_obsidian.Setting(containerEl).setName("Reindex Vault").setDesc("Scan all notes and update the semantic index.").addButton(
       (btn) => btn.setButtonText("Reindex Now").onClick(async () => {
         await this.plugin.reindexVault();
@@ -6792,15 +6804,20 @@ function sha256(text) {
 
 // src/indexing/VaultIndexer.ts
 var VaultIndexer = class {
-  constructor(app, store, embeddingProvider) {
+  constructor(app, store, embeddingProvider, options = {}) {
     this.app = app;
     this.store = store;
     this.embeddingProvider = embeddingProvider;
+    this.embeddingRequestDelayMs = normalizeDelayMs(options.embeddingRequestDelayMs ?? 0);
+    this.sleep = options.sleep ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
+  }
+  embeddingRequestDelayMs;
+  sleep;
+  setEmbeddingRequestDelayMs(delayMs) {
+    this.embeddingRequestDelayMs = normalizeDelayMs(delayMs);
   }
   async reindexVault(onProgress) {
-    if (!this.embeddingProvider.model || !this.embeddingProvider.apiKey) {
-      throw new Error("Gemini API key is missing. Please add it in settings.");
-    }
+    this.requireReadyProvider();
     const markdownFiles = this.app.vault.getMarkdownFiles();
     const total = markdownFiles.length;
     let current = 0;
@@ -6841,7 +6858,7 @@ var VaultIndexer = class {
           if (processedInThisBatch % 10 === 0) {
             await this.store.flush();
           }
-          await new Promise((resolve) => setTimeout(resolve, 5e3));
+          await this.delayAfterEmbeddingRequest();
         } catch (e) {
           console.error(`Failed to index ${file.path}:`, e);
           if (e.message?.includes("429") || e.message?.includes("quota") || e.message?.includes("API key is missing")) {
@@ -6857,6 +6874,31 @@ var VaultIndexer = class {
     } finally {
       await this.store.flush();
     }
+  }
+  async indexMissingNotes(onProgress) {
+    this.requireReadyProvider();
+    const markdownFiles = this.app.vault.getMarkdownFiles();
+    const indexedPaths = new Set(await this.store.listIndexedPaths());
+    const missingFiles = markdownFiles.filter((file) => !indexedPaths.has(file.path));
+    let current = 0;
+    try {
+      for (const file of missingFiles) {
+        current++;
+        if (onProgress)
+          onProgress(current, missingFiles.length);
+        await this.indexFile(file);
+        if (current < missingFiles.length) {
+          await this.delayAfterEmbeddingRequest();
+        }
+      }
+    } finally {
+      await this.store.flush();
+    }
+    return {
+      totalCount: markdownFiles.length,
+      indexedCount: missingFiles.length,
+      skippedCount: markdownFiles.length - missingFiles.length
+    };
   }
   async indexFile(file) {
     try {
@@ -6884,7 +6926,22 @@ var VaultIndexer = class {
       throw e;
     }
   }
+  requireReadyProvider() {
+    if (!this.embeddingProvider.model || !this.embeddingProvider.apiKey) {
+      throw new Error("Gemini API key is missing. Please add it in settings.");
+    }
+  }
+  async delayAfterEmbeddingRequest() {
+    if (this.embeddingRequestDelayMs > 0) {
+      await this.sleep(this.embeddingRequestDelayMs);
+    }
+  }
 };
+function normalizeDelayMs(value) {
+  if (!Number.isFinite(value))
+    return 0;
+  return Math.max(0, Math.floor(value));
+}
 
 // src/related/RelatedNotesService.ts
 var RelatedNotesService = class {
@@ -7060,6 +7117,7 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
     const toolbar = header.createDiv({ cls: "related-notes-toolbar" });
     this.addToolbarButton(toolbar, "refresh-cw", "Refresh results", () => this.updateView());
     this.addToolbarButton(toolbar, "scan-search", "Index current note", () => this.plugin.indexCurrentFile(this.currentFile));
+    this.addToolbarButton(toolbar, "list-plus", "Index missing notes", () => this.plugin.indexMissingNotes());
     this.addToolbarButton(toolbar, "database-zap", "Reindex vault", () => this.plugin.reindexVault());
     this.addToolbarButton(toolbar, "settings", "Open settings", () => this.plugin.openSettings());
   }
@@ -7304,6 +7362,11 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       callback: () => this.reindexVault()
     });
     this.addCommand({
+      id: "index-missing-notes",
+      name: "Index missing notes only",
+      callback: () => this.indexMissingNotes()
+    });
+    this.addCommand({
       id: "export-workbench-related-notes",
       name: "Export Medical Notes Workbench related notes",
       callback: () => this.exportWorkbenchRelatedNotes()
@@ -7373,7 +7436,8 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
   async saveSettings() {
     console.log("[RelatedNotes] Saving settings...", {
       keyLength: this.settings.geminiApiKey?.length || 0,
-      limit: this.settings.relatedNotesLimit
+      limit: this.settings.relatedNotesLimit,
+      embeddingRequestDelayMs: this.settings.embeddingRequestDelayMs
     });
     await this.saveData(this.settings);
     this.updateProvider();
@@ -7381,7 +7445,9 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
   updateProvider() {
     console.log("[RelatedNotes] Updating embedding provider and indexer...");
     this.embeddingProvider = new GeminiEmbeddingProvider(this.settings.geminiApiKey);
-    this.indexer = new VaultIndexer(this.app, this.store, this.embeddingProvider);
+    this.indexer = new VaultIndexer(this.app, this.store, this.embeddingProvider, {
+      embeddingRequestDelayMs: this.settings.embeddingRequestDelayMs
+    });
   }
   async activateView() {
     const { workspace } = this.app;
@@ -7446,6 +7512,28 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       new import_obsidian3.Notice(`Indexed ${target.basename}`);
     } catch (e) {
       const msg = e.message?.includes("429") || e.message?.includes("quota") ? "Rate limit reached" : "Indexing failed";
+      this.updateStatusBar("error", msg);
+      new import_obsidian3.Notice(msg);
+      console.error(e);
+    }
+  }
+  async indexMissingNotes() {
+    new import_obsidian3.Notice("Indexing missing notes...");
+    this.updateStatusBar("indexing", "Finding missing notes", 0);
+    try {
+      const result = await this.indexer.indexMissingNotes((current, total) => {
+        const pct = total === 0 ? 1 : current / total;
+        this.updateStatusBar("indexing", `Missing ${current}/${total}`, pct);
+      });
+      this.updateStatusBar("complete");
+      this.updateSidebar(this.app.workspace.getActiveFile());
+      if (result.indexedCount === 0) {
+        new import_obsidian3.Notice(`No missing notes found. ${result.skippedCount} notes already indexed.`);
+      } else {
+        new import_obsidian3.Notice(`Indexed ${result.indexedCount} missing note${result.indexedCount === 1 ? "" : "s"}.`);
+      }
+    } catch (e) {
+      const msg = e.message?.includes("429") || e.message?.includes("quota") ? "Rate limit reached" : "Missing-note indexing failed";
       this.updateStatusBar("error", msg);
       new import_obsidian3.Notice(msg);
       console.error(e);

@@ -16,6 +16,14 @@ npm install
 npm run build
 ```
 
+## Indexing Modes
+
+Use `Related Notes: Index missing notes only` when you only want to embed Markdown notes that are not already present in the local `index.json`. This is the fast path for adding new notes without scanning and hashing every note in the vault.
+
+Use `Related Notes: Reindex vault` when you want a full refresh. It scans all Markdown notes and only calls Gemini for notes whose semantic representation changed, but the scan itself still touches every note.
+
+The `Gemini request delay` setting controls the optional pause between embedding requests. It defaults to `0 ms`; increase it only if Gemini starts returning rate-limit errors.
+
 ## Medical Notes Workbench Export
 
 After a successful vault reindex or current-note index, the plugin automatically writes:

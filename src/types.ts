@@ -13,11 +13,13 @@ export type NoteVectorRecord = {
 export interface RelatedNotesSettings {
   geminiApiKey: string;
   relatedNotesLimit: number;
+  embeddingRequestDelayMs: number;
 }
 
 export const DEFAULT_SETTINGS: RelatedNotesSettings = {
   geminiApiKey: "",
   relatedNotesLimit: 10,
+  embeddingRequestDelayMs: 0,
 };
 
 export type WorkbenchRelatedNote = {

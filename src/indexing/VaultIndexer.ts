@@ -6,16 +6,28 @@ import { buildNoteRepresentation, makePreview } from "./noteRepresentation";
 import { sha256 } from "./hash";
 
 export class VaultIndexer {
+  private embeddingRequestDelayMs: number;
+  private sleep: (ms: number) => Promise<void>;
+
   constructor(
     private app: App,
     private store: NoteVectorStore,
-    private embeddingProvider: EmbeddingProvider
-  ) {}
+    private embeddingProvider: EmbeddingProvider,
+    options: {
+      embeddingRequestDelayMs?: number;
+      sleep?: (ms: number) => Promise<void>;
+    } = {}
+  ) {
+    this.embeddingRequestDelayMs = normalizeDelayMs(options.embeddingRequestDelayMs ?? 0);
+    this.sleep = options.sleep ?? ((ms: number) => new Promise((resolve) => setTimeout(resolve, ms)));
+  }
+
+  setEmbeddingRequestDelayMs(delayMs: number) {
+    this.embeddingRequestDelayMs = normalizeDelayMs(delayMs);
+  }
 
   async reindexVault(onProgress?: (current: number, total: number) => void) {
-    if (!this.embeddingProvider.model || !(this.embeddingProvider as GeminiEmbeddingProvider).apiKey) {
-        throw new Error("Gemini API key is missing. Please add it in settings.");
-    }
+    this.requireReadyProvider();
 
     const markdownFiles = this.app.vault.getMarkdownFiles();
     const total = markdownFiles.length;
@@ -67,9 +79,7 @@ export class VaultIndexer {
                 await this.store.flush();
             }
 
-            // Respect Gemini Free Tier rate limits (15 RPM -> 1 request every 4 seconds)
-            // Increased to 5 seconds to be 100% safe and avoid burst errors.
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            await this.delayAfterEmbeddingRequest();
           } catch (e: any) {
             console.error(`Failed to index ${file.path}:`, e);
             
@@ -89,6 +99,40 @@ export class VaultIndexer {
     } finally {
         await this.store.flush();
     }
+  }
+
+  async indexMissingNotes(onProgress?: (current: number, total: number) => void): Promise<{
+    totalCount: number;
+    indexedCount: number;
+    skippedCount: number;
+  }> {
+    this.requireReadyProvider();
+
+    const markdownFiles = this.app.vault.getMarkdownFiles();
+    const indexedPaths = new Set(await this.store.listIndexedPaths());
+    const missingFiles = markdownFiles.filter((file) => !indexedPaths.has(file.path));
+    let current = 0;
+
+    try {
+      for (const file of missingFiles) {
+        current++;
+        if (onProgress) onProgress(current, missingFiles.length);
+
+        await this.indexFile(file);
+
+        if (current < missingFiles.length) {
+          await this.delayAfterEmbeddingRequest();
+        }
+      }
+    } finally {
+      await this.store.flush();
+    }
+
+    return {
+      totalCount: markdownFiles.length,
+      indexedCount: missingFiles.length,
+      skippedCount: markdownFiles.length - missingFiles.length,
+    };
   }
 
   async indexFile(file: TFile) {
@@ -119,4 +163,21 @@ export class VaultIndexer {
           throw e;
       }
   }
+
+  private requireReadyProvider() {
+    if (!this.embeddingProvider.model || !(this.embeddingProvider as GeminiEmbeddingProvider).apiKey) {
+        throw new Error("Gemini API key is missing. Please add it in settings.");
+    }
+  }
+
+  private async delayAfterEmbeddingRequest() {
+    if (this.embeddingRequestDelayMs > 0) {
+      await this.sleep(this.embeddingRequestDelayMs);
+    }
+  }
+}
+
+function normalizeDelayMs(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.floor(value));
 }
