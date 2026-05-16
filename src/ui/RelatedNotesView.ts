@@ -125,27 +125,14 @@ export class RelatedNotesView extends ItemView {
     setIcon(titleIcon, "links-coming-in");
     titleRow.createEl("h4", { text: "Related Notes", cls: "related-notes-title" });
 
-    const topActions = top.createDiv({ cls: "related-notes-toolbar" });
-    this.addIconButton(topActions, "settings", "Open settings", () => this.plugin.openSettings());
+    const toolbar = top.createDiv({ cls: "related-notes-toolbar" });
+    this.addIconButton(toolbar, "refresh-cw", "Refresh results", () => this.updateView());
+    this.addIconButton(toolbar, "more-horizontal", "More actions", (event) => this.openOverflowMenu(event));
+    this.addIconButton(toolbar, "settings", "Open settings", () => this.plugin.openSettings());
 
-    const contextBar = header.createDiv({ cls: "related-notes-context-bar" });
-    const chip = contextBar.createDiv({ cls: "related-notes-context-chip" });
-    const chipIcon = chip.createSpan({ cls: "related-notes-context-chip-icon" });
-    setIcon(chipIcon, this.currentFile ? "file-text" : "file");
-    chip.createSpan({
-      text: this.currentFile ? this.currentFile.basename : "No active note",
-      cls: "related-notes-context-chip-text",
-    });
-	    if (!this.currentFile) chip.addClass("is-empty");
-
-    const profileChip = contextBar.createDiv({ cls: "related-notes-profile-chip" });
-    profileChip.setText(this.getProfileContextLabel());
-
-	    const contextActions = contextBar.createDiv({ cls: "related-notes-toolbar" });
-    this.addIconButton(contextActions, "refresh-cw", "Refresh results", () => this.updateView());
-    this.addIconButton(contextActions, "more-horizontal", "More actions", (event) =>
-      this.openOverflowMenu(event)
-    );
+    if (this.currentFile) {
+      header.createDiv({ text: this.currentFile.basename, cls: "related-notes-subtitle" });
+    }
   }
 
   private openOverflowMenu(event: MouseEvent | undefined) {
@@ -201,7 +188,7 @@ export class RelatedNotesView extends ItemView {
       return;
     }
 
-    this.renderResults(container, result.notes);
+    this.renderResults(container, result.notes, getEmbeddingProfileLabel(profileId));
   }
 
   private async renderCompareMode(container: HTMLElement, token: number) {
@@ -288,17 +275,16 @@ export class RelatedNotesView extends ItemView {
     return false;
   }
 
-		  private renderResults(container: HTMLElement, notes: RelatedNoteResult[]) {
+		  private renderResults(container: HTMLElement, notes: RelatedNoteResult[], profileLabel?: string) {
     const summary = container.createDiv({ cls: "related-notes-summary" });
-    summary.setText(`${notes.length} related note${notes.length === 1 ? "" : "s"}`);
+    const countText = `${notes.length} note${notes.length === 1 ? "" : "s"}`;
+    summary.setText(profileLabel ? `${countText} · ${profileLabel}` : countText);
 
     const list = container.createDiv({ cls: "related-notes-list" });
-
     for (const note of notes) {
       this.renderResultRow(list, note);
-		  }
+    }
   }
-
   private renderResultsSection(
     container: HTMLElement,
     title: string,
@@ -364,7 +350,6 @@ export class RelatedNotesView extends ItemView {
 
   private renderResultRow(list: HTMLElement, note: RelatedNoteResult) {
     const row = list.createDiv({ cls: "related-notes-row" });
-    row.addClass(`is-score-${getScoreTone(note.score)}`);
     row.setAttr("role", "button");
     row.setAttr("tabindex", "0");
     row.setAttr("aria-label", `Open ${note.title}`);
@@ -383,13 +368,11 @@ export class RelatedNotesView extends ItemView {
     });
 
     const body = row.createDiv({ cls: "related-notes-row-body" });
-    const titleLine = body.createDiv({ cls: "related-notes-row-title-line" });
-    titleLine.createDiv({ text: note.title, cls: "related-notes-row-title" });
-    titleLine.createSpan({ text: formatScore(note.score), cls: "related-notes-score-text" });
+    body.createDiv({ text: note.title, cls: "related-notes-row-title" });
 
-    if (note.folder) {
-      body.createDiv({ text: note.folder, cls: "related-notes-row-meta" });
-    }
+    const metaParts: string[] = [formatScore(note.score)];
+    if (note.folder) metaParts.push(note.folder);
+    body.createDiv({ text: metaParts.join("  ·  "), cls: "related-notes-row-meta" });
 
     if (note.preview) {
       const cleaned = note.preview.replace(/^#+\s*/, "").trim();

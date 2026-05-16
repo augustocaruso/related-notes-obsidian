@@ -7489,28 +7489,13 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
     const titleIcon = titleRow.createSpan({ cls: "related-notes-title-icon" });
     (0, import_obsidian2.setIcon)(titleIcon, "links-coming-in");
     titleRow.createEl("h4", { text: "Related Notes", cls: "related-notes-title" });
-    const topActions = top.createDiv({ cls: "related-notes-toolbar" });
-    this.addIconButton(topActions, "settings", "Open settings", () => this.plugin.openSettings());
-    const contextBar = header.createDiv({ cls: "related-notes-context-bar" });
-    const chip = contextBar.createDiv({ cls: "related-notes-context-chip" });
-    const chipIcon = chip.createSpan({ cls: "related-notes-context-chip-icon" });
-    (0, import_obsidian2.setIcon)(chipIcon, this.currentFile ? "file-text" : "file");
-    chip.createSpan({
-      text: this.currentFile ? this.currentFile.basename : "No active note",
-      cls: "related-notes-context-chip-text"
-    });
-    if (!this.currentFile)
-      chip.addClass("is-empty");
-    const profileChip = contextBar.createDiv({ cls: "related-notes-profile-chip" });
-    profileChip.setText(this.getProfileContextLabel());
-    const contextActions = contextBar.createDiv({ cls: "related-notes-toolbar" });
-    this.addIconButton(contextActions, "refresh-cw", "Refresh results", () => this.updateView());
-    this.addIconButton(
-      contextActions,
-      "more-horizontal",
-      "More actions",
-      (event) => this.openOverflowMenu(event)
-    );
+    const toolbar = top.createDiv({ cls: "related-notes-toolbar" });
+    this.addIconButton(toolbar, "refresh-cw", "Refresh results", () => this.updateView());
+    this.addIconButton(toolbar, "more-horizontal", "More actions", (event) => this.openOverflowMenu(event));
+    this.addIconButton(toolbar, "settings", "Open settings", () => this.plugin.openSettings());
+    if (this.currentFile) {
+      header.createDiv({ text: this.currentFile.basename, cls: "related-notes-subtitle" });
+    }
   }
   openOverflowMenu(event) {
     const menu = new import_obsidian2.Menu();
@@ -7552,7 +7537,7 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
       });
       return;
     }
-    this.renderResults(container, result.notes);
+    this.renderResults(container, result.notes, getEmbeddingProfileLabel(profileId));
   }
   async renderCompareMode(container, token) {
     if (!this.service || !this.currentFile)
@@ -7624,9 +7609,10 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
     }
     return false;
   }
-  renderResults(container, notes) {
+  renderResults(container, notes, profileLabel) {
     const summary = container.createDiv({ cls: "related-notes-summary" });
-    summary.setText(`${notes.length} related note${notes.length === 1 ? "" : "s"}`);
+    const countText = `${notes.length} note${notes.length === 1 ? "" : "s"}`;
+    summary.setText(profileLabel ? `${countText} \xB7 ${profileLabel}` : countText);
     const list = container.createDiv({ cls: "related-notes-list" });
     for (const note of notes) {
       this.renderResultRow(list, note);
@@ -7682,7 +7668,6 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
   }
   renderResultRow(list, note) {
     const row = list.createDiv({ cls: "related-notes-row" });
-    row.addClass(`is-score-${getScoreTone(note.score)}`);
     row.setAttr("role", "button");
     row.setAttr("tabindex", "0");
     row.setAttr("aria-label", `Open ${note.title}`);
@@ -7698,12 +7683,11 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
       }
     });
     const body = row.createDiv({ cls: "related-notes-row-body" });
-    const titleLine = body.createDiv({ cls: "related-notes-row-title-line" });
-    titleLine.createDiv({ text: note.title, cls: "related-notes-row-title" });
-    titleLine.createSpan({ text: formatScore(note.score), cls: "related-notes-score-text" });
-    if (note.folder) {
-      body.createDiv({ text: note.folder, cls: "related-notes-row-meta" });
-    }
+    body.createDiv({ text: note.title, cls: "related-notes-row-title" });
+    const metaParts = [formatScore(note.score)];
+    if (note.folder)
+      metaParts.push(note.folder);
+    body.createDiv({ text: metaParts.join("  \xB7  "), cls: "related-notes-row-meta" });
     if (note.preview) {
       const cleaned = note.preview.replace(/^#+\s*/, "").trim();
       if (cleaned && cleaned.toLowerCase() !== note.title.toLowerCase()) {
