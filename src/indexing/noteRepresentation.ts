@@ -88,7 +88,9 @@ function cleanMarkdownV1(markdown: string): string {
 }
 
 function removeFrontmatter(text: string): string {
-  return text.replace(/^---\r?\n[\s\S]*?\r?\n---\s*(?:\r?\n|$)/, "");
+  return text
+    .replace(/^---\r?\n[\s\S]*?\r?\n---\s*(?:\r?\n|$)/, "")
+    .replace(/^\+\+\+\r?\n[\s\S]*?\r?\n\+\+\+\s*(?:\r?\n|$)/, "");
 }
 
 function removeRelatedNotesSection(text: string): string {
@@ -104,7 +106,7 @@ function removeRelatedNotesSection(text: string): string {
 }
 
 function removeGeneratedFooter(text: string): string {
-  const footer = /\n---\s*\n(?:Gerado|Generated|Exportado|Fonte|Source|Criado|Created)[\s\S]*$/i;
+  const footer = /\n---\s*\n(?:\[[^\]]*Chat Original[^\]]*\]\([^)]+\)|Chat Original\b|Gerado|Generated|Exportado|Fonte|Source|Criado|Created)[\s\S]*$/i;
   return text.replace(footer, "");
 }
 

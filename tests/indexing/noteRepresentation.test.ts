@@ -103,3 +103,66 @@ test("raw_v1 and clean_v1 produce different hashes when scaffolding exists", () 
 
   assert.notEqual(raw.representationHash, clean.representationHash);
 });
+
+test("clean_v1 ignores TOML frontmatter changes", () => {
+  const oldRepresentation = buildNoteRepresentation({
+    path: "Cardio/HAS.md",
+    title: "HAS",
+    markdown: `+++
+tags = ["old"]
++++
+# Hipertensão
+
+Texto principal.
+`,
+    profileId: "clean_v1",
+  });
+  const nextRepresentation = buildNoteRepresentation({
+    path: "Cardio/HAS.md",
+    title: "HAS",
+    markdown: `+++
+tags = ["new"]
+aliases = ["Pressão alta"]
++++
+# Hipertensão
+
+Texto principal.
+`,
+    profileId: "clean_v1",
+  });
+
+  assert.equal(nextRepresentation.representationHash, oldRepresentation.representationHash);
+  assert.doesNotMatch(nextRepresentation.text, /tags =/);
+  assert.doesNotMatch(nextRepresentation.text, /aliases =/);
+});
+
+test("clean_v1 ignores Chat Original footer changes", () => {
+  const oldRepresentation = buildNoteRepresentation({
+    path: "Cardio/HAS.md",
+    title: "HAS",
+    markdown: `# Hipertensão
+
+Texto principal.
+
+---
+[Chat Original](https://gemini.google.com/app/old)
+`,
+    profileId: "clean_v1",
+  });
+  const nextRepresentation = buildNoteRepresentation({
+    path: "Cardio/HAS.md",
+    title: "HAS",
+    markdown: `# Hipertensão
+
+Texto principal.
+
+---
+[Chat Original](https://gemini.google.com/app/new)
+`,
+    profileId: "clean_v1",
+  });
+
+  assert.equal(nextRepresentation.representationHash, oldRepresentation.representationHash);
+  assert.doesNotMatch(nextRepresentation.text, /Chat Original/);
+  assert.doesNotMatch(nextRepresentation.text, /gemini\.google\.com/);
+});

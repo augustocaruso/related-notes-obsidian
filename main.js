@@ -7135,7 +7135,7 @@ function cleanMarkdownV1(markdown) {
   return normalizeCleanWhitespace(text);
 }
 function removeFrontmatter(text) {
-  return text.replace(/^---\r?\n[\s\S]*?\r?\n---\s*(?:\r?\n|$)/, "");
+  return text.replace(/^---\r?\n[\s\S]*?\r?\n---\s*(?:\r?\n|$)/, "").replace(/^\+\+\+\r?\n[\s\S]*?\r?\n\+\+\+\s*(?:\r?\n|$)/, "");
 }
 function removeRelatedNotesSection(text) {
   const heading = /^##\s+(?:🔗\s+)?Notas Relacionadas\s*$/m;
@@ -7150,7 +7150,7 @@ function removeRelatedNotesSection(text) {
   return `${text.slice(0, match.index)}${text.slice(end)}`;
 }
 function removeGeneratedFooter(text) {
-  const footer = /\n---\s*\n(?:Gerado|Generated|Exportado|Fonte|Source|Criado|Created)[\s\S]*$/i;
+  const footer = /\n---\s*\n(?:\[[^\]]*Chat Original[^\]]*\]\([^)]+\)|Chat Original\b|Gerado|Generated|Exportado|Fonte|Source|Criado|Created)[\s\S]*$/i;
   return text.replace(footer, "");
 }
 function restoreCodeBlocks(text, codeBlocks) {

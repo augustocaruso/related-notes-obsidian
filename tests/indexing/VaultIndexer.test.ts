@@ -213,6 +213,89 @@ Texto principal.
   assert.equal(upsertCalls, 0);
 });
 
+test("reindexVault skips clean_v1 embedding when only TOML frontmatter and Chat Original footer changed", async () => {
+  const oldMarkdown = `+++
+tags = ["old"]
++++
+# Choque
+
+Texto principal.
+
+---
+[Chat Original](https://gemini.google.com/app/old)
+`;
+  const newMarkdown = `+++
+tags = ["new"]
+aliases = ["Choque circulatório"]
++++
+# Choque
+
+Texto principal.
+
+---
+[Chat Original](https://gemini.google.com/app/new)
+`;
+  const built = buildNoteRepresentation({
+    path: "Choque.md",
+    title: "Choque",
+    markdown: oldMarkdown,
+    profileId: "clean_v1",
+  });
+  const nextBuilt = buildNoteRepresentation({
+    path: "Choque.md",
+    title: "Choque",
+    markdown: newMarkdown,
+    profileId: "clean_v1",
+  });
+  assert.equal(nextBuilt.representationHash, built.representationHash);
+
+  let embedCalls = 0;
+  let upsertCalls = 0;
+  const app = {
+    vault: {
+      getMarkdownFiles: () => [makeFile("Choque.md", newMarkdown)],
+      read: async (file: { markdown: string }) => file.markdown,
+    },
+  };
+  const store = {
+    listIndexedPaths: async () => ["Choque.md"],
+    getNote: async () => ({
+      path: "Choque.md",
+      title: "Choque",
+      folder: "",
+      preview: "Texto principal.",
+      rawContentHash: sha256(oldMarkdown),
+      representationHash: built.representationHash,
+      contentHash: built.representationHash,
+      mtime: 1,
+      embeddingModel: "test-model",
+      embeddingProfile: "clean_v1",
+      embeddingProfileVersion: built.profileVersion,
+      vector: [0.1, 0.2, 0.3],
+      updatedAt: 1,
+    }),
+    upsertNote: async () => {
+      upsertCalls++;
+    },
+    deleteNote: async () => undefined,
+    flush: async () => undefined,
+  };
+  const embeddingProvider = {
+    model: "test-model",
+    apiKey: "test-key",
+    embed: async () => {
+      embedCalls++;
+      return [0.4, 0.5, 0.6];
+    },
+  };
+
+  const indexer = new VaultIndexer(app as any, store as any, embeddingProvider as any);
+  await indexer.reindexVault("clean_v1");
+
+  assert.equal(embedCalls, 0);
+  assert.equal(upsertCalls, 0);
+});
+
 test("reindexVault stops before the next note when cancellation is requested", async () => {
   const files = [makeFile("A.md", "# A"), makeFile("B.md", "# B"), makeFile("C.md", "# C")];
   const controller = new AbortController();
