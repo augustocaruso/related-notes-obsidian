@@ -78,7 +78,7 @@
 
 .related-notes-row {
   position: relative;
-  padding: var(--size-2-3) var(--size-4-2);
+  padding: var(--size-4-2) var(--size-4-2);
   cursor: pointer;
   border-radius: var(--radius-s);
   transition: background-color 80ms ease;
@@ -101,6 +101,13 @@
   min-width: 0;
 }
 
+.related-notes-row-title-line {
+  display: flex;
+  align-items: baseline;
+  gap: var(--size-2-2);
+  min-width: 0;
+}
+
 .related-notes-row-title {
   color: var(--text-normal);
   font-size: var(--font-ui-small);
@@ -108,10 +115,24 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
+  flex: 1;
 }
 
 .related-notes-row:hover .related-notes-row-title {
   color: var(--text-accent);
+}
+
+.related-notes-score-text {
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.related-notes-score-text.is-high-score {
+  color: var(--text-accent);
+  font-weight: var(--font-semibold);
 }
 
 .related-notes-row-meta {

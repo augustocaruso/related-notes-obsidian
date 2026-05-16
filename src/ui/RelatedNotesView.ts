@@ -368,15 +368,24 @@ export class RelatedNotesView extends ItemView {
     });
 
     const body = row.createDiv({ cls: "related-notes-row-body" });
-    body.createDiv({ text: note.title, cls: "related-notes-row-title" });
+    const titleLine = body.createDiv({ cls: "related-notes-row-title-line" });
+    titleLine.createDiv({ text: note.title, cls: "related-notes-row-title" });
+    const scoreEl = titleLine.createSpan({ text: formatScore(note.score), cls: "related-notes-score-text" });
+    if (note.score >= 0.78) scoreEl.addClass("is-high-score");
 
-    const metaParts: string[] = [formatScore(note.score)];
-    if (note.folder) metaParts.push(note.folder);
-    body.createDiv({ text: metaParts.join("  ·  "), cls: "related-notes-row-meta" });
+    if (note.folder) {
+      body.createDiv({ text: note.folder, cls: "related-notes-row-meta" });
+    }
 
     if (note.preview) {
-      const cleaned = note.preview.replace(/^#+\s*/, "").trim();
-      if (cleaned && cleaned.toLowerCase() !== note.title.toLowerCase()) {
+      const titleLower = note.title.toLowerCase();
+      const cleaned = note.preview
+        .split(/\r?\n/)
+        .map((line) => line.replace(/^#+\s*/, "").trim())
+        .filter((line) => line && line.toLowerCase() !== titleLower)
+        .join(" ")
+        .trim();
+      if (cleaned) {
         body.createDiv({ text: cleaned, cls: "related-notes-row-preview" });
       }
     }
