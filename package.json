@@ -1,6 +1,6 @@
 {
   "name": "related-notes-obsidian",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Obsidian plugin for semantic related notes using Gemini embeddings.",
   "main": "main.js",
   "scripts": {

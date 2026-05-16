@@ -7692,8 +7692,11 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
       body.createDiv({ text: note.folder, cls: "related-notes-row-meta" });
     }
     if (note.preview) {
+      let cleaned = note.preview.replace(/^#+\s*/, "").trim();
       const titleLower = note.title.toLowerCase();
-      const cleaned = note.preview.split(/\r?\n/).map((line) => line.replace(/^#+\s*/, "").trim()).filter((line) => line && line.toLowerCase() !== titleLower).join(" ").trim();
+      if (cleaned.toLowerCase().startsWith(titleLower)) {
+        cleaned = cleaned.substring(note.title.length).trim();
+      }
       if (cleaned) {
         body.createDiv({ text: cleaned, cls: "related-notes-row-preview" });
       }
