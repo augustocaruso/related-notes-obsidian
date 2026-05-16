@@ -7199,7 +7199,7 @@ var VaultIndexer = class {
           });
           const rawContentHash = sha256(markdown);
           const existing = await this.store.getNote(file.path, profileId);
-          if (existing && this.isRecordCurrent(existing, rawContentHash, built.representationHash, profileId, built.profileVersion)) {
+          if (existing && this.isRecordCurrent(existing, built.representationHash, profileId, built.profileVersion)) {
             indexedPaths.delete(file.path);
             continue;
           }
@@ -7279,8 +7279,8 @@ var VaultIndexer = class {
       await this.sleep(this.embeddingRequestDelayMs);
     }
   }
-  isRecordCurrent(record, rawContentHash, representationHash, profileId, profileVersion) {
-    return record.rawContentHash === rawContentHash && record.representationHash === representationHash && record.embeddingModel === this.embeddingProvider.model && record.embeddingProfile === profileId && record.embeddingProfileVersion === profileVersion;
+  isRecordCurrent(record, representationHash, profileId, profileVersion) {
+    return record.representationHash === representationHash && record.embeddingModel === this.embeddingProvider.model && record.embeddingProfile === profileId && record.embeddingProfileVersion === profileVersion;
   }
   makeRecord(file, rawContentHash, built, vector) {
     return {

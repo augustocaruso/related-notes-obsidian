@@ -59,7 +59,7 @@ export class VaultIndexer {
             const rawContentHash = sha256(markdown);
             const existing = await this.store.getNote(file.path, profileId);
 
-            if (existing && this.isRecordCurrent(existing, rawContentHash, built.representationHash, profileId, built.profileVersion)) {
+            if (existing && this.isRecordCurrent(existing, built.representationHash, profileId, built.profileVersion)) {
               indexedPaths.delete(file.path);
               continue;
             }
@@ -169,13 +169,11 @@ export class VaultIndexer {
 
   private isRecordCurrent(
     record: NoteVectorRecord,
-    rawContentHash: string,
     representationHash: string,
     profileId: EmbeddingProfileId,
     profileVersion: number,
   ): boolean {
-    return record.rawContentHash === rawContentHash
-      && record.representationHash === representationHash
+    return record.representationHash === representationHash
       && record.embeddingModel === this.embeddingProvider.model
       && record.embeddingProfile === profileId
       && record.embeddingProfileVersion === profileVersion;

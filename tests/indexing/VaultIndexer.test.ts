@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { VaultIndexer } from "../../src/indexing/VaultIndexer";
+import { sha256 } from "../../src/indexing/hash";
+import { buildNoteRepresentation } from "../../src/indexing/noteRepresentation";
 
 function makeFile(path: string, markdown: string) {
   const basename = path.split("/").pop()?.replace(/\.md$/, "") ?? path;
@@ -122,4 +124,91 @@ test("indexMissingNotes treats missing notes per profile instead of per path glo
 
   assert.deepEqual(upserted, [{ path: "B.md", profile: "clean_v1" }]);
   assert.equal(result.indexedCount, 1);
+});
+
+test("reindexVault skips clean_v1 embedding when only raw markdown scaffolding changed", async () => {
+  const oldMarkdown = `---
+tags:
+  - old
+---
+# HAS
+
+Texto principal.
+
+## 🔗 Notas Relacionadas
+- [[DRC]]
+`;
+  const newMarkdown = `---
+tags:
+  - new
+aliases:
+  - Hipertensão
+---
+# HAS
+
+Texto principal.
+
+## 🔗 Notas Relacionadas
+- [[Diabetes]]
+- [[AVC]]
+`;
+  const built = buildNoteRepresentation({
+    path: "HAS.md",
+    title: "HAS",
+    markdown: oldMarkdown,
+    profileId: "clean_v1",
+  });
+  const nextBuilt = buildNoteRepresentation({
+    path: "HAS.md",
+    title: "HAS",
+    markdown: newMarkdown,
+    profileId: "clean_v1",
+  });
+  assert.equal(nextBuilt.representationHash, built.representationHash);
+
+  let embedCalls = 0;
+  let upsertCalls = 0;
+  const app = {
+    vault: {
+      getMarkdownFiles: () => [makeFile("HAS.md", newMarkdown)],
+      read: async (file: { markdown: string }) => file.markdown,
+    },
+  };
+  const store = {
+    listIndexedPaths: async () => ["HAS.md"],
+    getNote: async () => ({
+      path: "HAS.md",
+      title: "HAS",
+      folder: "",
+      preview: "Texto principal.",
+      rawContentHash: sha256(oldMarkdown),
+      representationHash: built.representationHash,
+      contentHash: built.representationHash,
+      mtime: 1,
+      embeddingModel: "test-model",
+      embeddingProfile: "clean_v1",
+      embeddingProfileVersion: built.profileVersion,
+      vector: [0.1, 0.2, 0.3],
+      updatedAt: 1,
+    }),
+    upsertNote: async () => {
+      upsertCalls++;
+    },
+    deleteNote: async () => undefined,
+    flush: async () => undefined,
+  };
+  const embeddingProvider = {
+    model: "test-model",
+    apiKey: "test-key",
+    embed: async () => {
+      embedCalls++;
+      return [0.4, 0.5, 0.6];
+    },
+  };
+
+  const indexer = new VaultIndexer(app as any, store as any, embeddingProvider as any);
+  await indexer.reindexVault("clean_v1");
+
+  assert.equal(embedCalls, 0);
+  assert.equal(upsertCalls, 0);
 });
