@@ -1,7 +1,7 @@
 {
   "id": "related-notes-obsidian",
   "name": "Related Notes (Gemini)",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "minAppVersion": "0.15.0",
   "description": "Semantic related notes using Gemini embeddings.",
   "author": "Leonardo",
