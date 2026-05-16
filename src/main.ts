@@ -10,7 +10,7 @@ import {
 import { RelatedNotesSettingTab } from "./settings";
 import { GeminiEmbeddingProvider } from "./embeddings/GeminiEmbeddingProvider";
 import { JsonVectorStore } from "./store/JsonVectorStore";
-import { VaultIndexer } from "./indexing/VaultIndexer";
+import { IndexingCancelledError, VaultIndexer } from "./indexing/VaultIndexer";
 import { RelatedNotesService } from "./related/RelatedNotesService";
 import { RelatedNotesView, RELATED_NOTES_VIEW_TYPE } from "./ui/RelatedNotesView";
 import { writeWorkbenchExport } from "./export/WorkbenchExport";
@@ -23,6 +23,9 @@ export default class RelatedNotesPlugin extends Plugin {
   embeddingProvider!: GeminiEmbeddingProvider;
 
   statusBarItem!: HTMLElement;
+  private activeIndexingController: AbortController | null = null;
+  private activeIndexingLabel = "";
+  private indexingCancelRequested = false;
 
   async onload() {
     await this.loadSettings();
@@ -213,6 +216,8 @@ export default class RelatedNotesPlugin extends Plugin {
 
 	  async reindexVault(profileId: EmbeddingProfileId = this.settings.defaultEmbeddingProfile) {
 	    const profileLabel = getEmbeddingProfileLabel(profileId);
+	    const controller = this.beginIndexingRun(`${profileLabel} reindex`);
+	    if (!controller) return;
 	    new Notice(`Indexing vault for ${profileLabel}... please wait.`);
 	    this.updateStatusBar("indexing", `Starting ${profileLabel}`);
 
@@ -220,7 +225,7 @@ export default class RelatedNotesPlugin extends Plugin {
 	        await this.indexer.reindexVault(profileId, (current, total) => {
 	            const pct = current / total;
 	            this.updateStatusBar("indexing", `${profileLabel} ${current}/${total}`, pct);
-	        });
+	        }, { signal: controller.signal });
 	        this.updateStatusBar("complete");
 	        new Notice(`${profileLabel} vault indexing complete!`);
 	        this.updateSidebar(this.app.workspace.getActiveFile());
@@ -228,6 +233,12 @@ export default class RelatedNotesPlugin extends Plugin {
 	          await this.exportWorkbenchRelatedNotes(profileId);
 	        }
     } catch (e: any) {
+        if (e instanceof IndexingCancelledError) {
+          this.updateStatusBar("idle");
+          new Notice(`${profileLabel} indexing stopped.`);
+          console.log("[RelatedNotes] Indexing stopped by user.");
+          return;
+        }
         let msg = "Indexing Failed";
         if (e.message?.includes("quota")) {
             msg = "Daily Quota Reached";
@@ -238,6 +249,8 @@ export default class RelatedNotesPlugin extends Plugin {
         this.updateStatusBar("error", msg);
         new Notice(`Indexing paused: ${msg}. Progress saved.`);
         console.error(e);
+    } finally {
+        this.finishIndexingRun(controller);
     }
   }
 
@@ -250,10 +263,12 @@ export default class RelatedNotesPlugin extends Plugin {
     }
 
 	    const profileLabel = getEmbeddingProfileLabel(profileId);
+	    const controller = this.beginIndexingRun(`${profileLabel} current note`);
+	    if (!controller) return;
 	    this.updateStatusBar("indexing", `Indexing ${profileLabel}`, 0);
 
 	    try {
-	      await this.indexer.indexFile(target, profileId);
+	      await this.indexer.indexFile(target, profileId, { signal: controller.signal });
 	      await this.store.flush();
 	      this.updateStatusBar("complete");
 	      this.updateSidebar(target);
@@ -262,17 +277,27 @@ export default class RelatedNotesPlugin extends Plugin {
 	      }
 	      new Notice(`Indexed ${target.basename} for ${profileLabel}`);
     } catch (e: any) {
+      if (e instanceof IndexingCancelledError) {
+        this.updateStatusBar("idle");
+        new Notice(`${profileLabel} indexing stopped.`);
+        console.log("[RelatedNotes] Current-note indexing stopped by user.");
+        return;
+      }
       const msg = e.message?.includes("429") || e.message?.includes("quota")
         ? "Rate limit reached"
         : "Indexing failed";
       this.updateStatusBar("error", msg);
       new Notice(msg);
       console.error(e);
+    } finally {
+      this.finishIndexingRun(controller);
     }
   }
 
-	  async indexMissingNotes(profileId: EmbeddingProfileId = this.settings.defaultEmbeddingProfile) {
+  async indexMissingNotes(profileId: EmbeddingProfileId = this.settings.defaultEmbeddingProfile): Promise<boolean> {
 	    const profileLabel = getEmbeddingProfileLabel(profileId);
+	    const controller = this.beginIndexingRun(`${profileLabel} missing notes`);
+	    if (!controller) return false;
 	    new Notice(`Indexing missing notes for ${profileLabel}...`);
 	    this.updateStatusBar("indexing", `Finding missing ${profileLabel}`, 0);
 
@@ -280,7 +305,7 @@ export default class RelatedNotesPlugin extends Plugin {
 	      const result = await this.indexer.indexMissingNotes(profileId, (current, total) => {
 	        const pct = total === 0 ? 1 : current / total;
 	        this.updateStatusBar("indexing", `${profileLabel} ${current}/${total}`, pct);
-	      });
+	      }, { signal: controller.signal });
 
       this.updateStatusBar("complete");
       this.updateSidebar(this.app.workspace.getActiveFile());
@@ -293,19 +318,30 @@ export default class RelatedNotesPlugin extends Plugin {
 	      if (profileId === this.settings.defaultEmbeddingProfile && result.indexedCount > 0) {
 	        await this.exportWorkbenchRelatedNotes(profileId);
 	      }
+      return true;
     } catch (e: any) {
+      if (e instanceof IndexingCancelledError) {
+        this.updateStatusBar("idle");
+        new Notice(`${profileLabel} indexing stopped.`);
+        console.log("[RelatedNotes] Missing-note indexing stopped by user.");
+        return false;
+      }
       const msg = e.message?.includes("429") || e.message?.includes("quota")
         ? "Rate limit reached"
         : "Missing-note indexing failed";
 	      this.updateStatusBar("error", msg);
 	      new Notice(msg);
 	      console.error(e);
+        return false;
+		  } finally {
+		    this.finishIndexingRun(controller);
 		  }
 	  }
 
 		  async indexAllStoredProfiles() {
 	    for (const profileId of this.settings.storedEmbeddingProfiles) {
-	      await this.indexMissingNotes(profileId);
+	      const completed = await this.indexMissingNotes(profileId);
+	      if (!completed) break;
 	    }
 	  }
 
@@ -349,5 +385,48 @@ export default class RelatedNotesPlugin extends Plugin {
       console.error("[RelatedNotes] Workbench export failed:", e);
       new Notice("Workbench export failed. See console for details.");
     }
+  }
+
+  isIndexing(): boolean {
+    return Boolean(this.activeIndexingController);
+  }
+
+  isIndexingStopRequested(): boolean {
+    return this.indexingCancelRequested;
+  }
+
+  stopIndexing() {
+    if (!this.activeIndexingController) {
+      new Notice("No indexing run is active.");
+      return;
+    }
+    if (!this.indexingCancelRequested) {
+      this.indexingCancelRequested = true;
+      this.updateStatusBar("indexing", "Stopping after current note");
+      new Notice("Stopping indexing after the current note...");
+      this.updateSidebar(this.app.workspace.getActiveFile());
+    }
+    this.activeIndexingController.abort();
+  }
+
+  private beginIndexingRun(label: string): AbortController | null {
+    if (this.activeIndexingController) {
+      new Notice(`Indexing is already running: ${this.activeIndexingLabel}. Stop it first to start another run.`);
+      return null;
+    }
+    const controller = new AbortController();
+    this.activeIndexingController = controller;
+    this.activeIndexingLabel = label;
+    this.indexingCancelRequested = false;
+    this.updateSidebar(this.app.workspace.getActiveFile());
+    return controller;
+  }
+
+  private finishIndexingRun(controller: AbortController) {
+    if (this.activeIndexingController !== controller) return;
+    this.activeIndexingController = null;
+    this.activeIndexingLabel = "";
+    this.indexingCancelRequested = false;
+    this.updateSidebar(this.app.workspace.getActiveFile());
   }
 }

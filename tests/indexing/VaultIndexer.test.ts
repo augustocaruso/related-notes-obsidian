@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { VaultIndexer } from "../../src/indexing/VaultIndexer";
+import { IndexingCancelledError, VaultIndexer } from "../../src/indexing/VaultIndexer";
 import { sha256 } from "../../src/indexing/hash";
 import { buildNoteRepresentation } from "../../src/indexing/noteRepresentation";
 
@@ -211,4 +211,85 @@ Texto principal.
 
   assert.equal(embedCalls, 0);
   assert.equal(upsertCalls, 0);
+});
+
+test("reindexVault stops before the next note when cancellation is requested", async () => {
+  const files = [makeFile("A.md", "# A"), makeFile("B.md", "# B"), makeFile("C.md", "# C")];
+  const controller = new AbortController();
+  const embedded: string[] = [];
+  const upserted: string[] = [];
+  let flushCalls = 0;
+  const app = {
+    vault: {
+      getMarkdownFiles: () => files,
+      read: async (file: { markdown: string }) => file.markdown,
+    },
+  };
+  const store = {
+    listIndexedPaths: async () => [],
+    getNote: async () => null,
+    upsertNote: async (record: { path: string }) => {
+      upserted.push(record.path);
+    },
+    deleteNote: async () => undefined,
+    flush: async () => {
+      flushCalls++;
+    },
+  };
+  const embeddingProvider = {
+    model: "test-model",
+    apiKey: "test-key",
+    embed: async (representation: string) => {
+      embedded.push(representation);
+      controller.abort();
+      return [0.1, 0.2, 0.3];
+    },
+  };
+
+  const indexer = new VaultIndexer(app as any, store as any, embeddingProvider as any);
+
+  await assert.rejects(
+    () => indexer.reindexVault("clean_v1", undefined, { signal: controller.signal }),
+    IndexingCancelledError,
+  );
+
+  assert.equal(embedded.length, 1);
+  assert.deepEqual(upserted, ["A.md"]);
+  assert.equal(flushCalls > 0, true);
+});
+
+test("indexMissingNotes stops before the next missing note when cancellation is requested", async () => {
+  const files = [makeFile("A.md", "# A"), makeFile("B.md", "# B"), makeFile("C.md", "# C")];
+  const controller = new AbortController();
+  const upserted: string[] = [];
+  const app = {
+    vault: {
+      getMarkdownFiles: () => files,
+      read: async (file: { markdown: string }) => file.markdown,
+    },
+  };
+  const store = {
+    listIndexedPaths: async () => [],
+    upsertNote: async (record: { path: string }) => {
+      upserted.push(record.path);
+    },
+    flush: async () => undefined,
+  };
+  const embeddingProvider = {
+    model: "test-model",
+    apiKey: "test-key",
+    embed: async () => {
+      controller.abort();
+      return [0.1, 0.2, 0.3];
+    },
+  };
+
+  const indexer = new VaultIndexer(app as any, store as any, embeddingProvider as any);
+
+  await assert.rejects(
+    () => indexer.indexMissingNotes("clean_v1", undefined, { signal: controller.signal }),
+    IndexingCancelledError,
+  );
+
+  assert.deepEqual(upserted, ["A.md"]);
 });

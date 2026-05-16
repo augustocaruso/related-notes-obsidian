@@ -8,6 +8,17 @@ import { DEFAULT_EMBEDDING_PROFILE, EmbeddingProfileId, NoteVectorRecord } from 
 
 type ProgressCallback = (current: number, total: number) => void;
 
+type IndexingRunOptions = {
+  signal?: AbortSignal;
+};
+
+export class IndexingCancelledError extends Error {
+  constructor() {
+    super("Indexing cancelled");
+    this.name = "IndexingCancelledError";
+  }
+}
+
 export class VaultIndexer {
   private embeddingRequestDelayMs: number;
   private sleep: (ms: number) => Promise<void>;
@@ -32,6 +43,7 @@ export class VaultIndexer {
   async reindexVault(
     profileId: EmbeddingProfileId = DEFAULT_EMBEDDING_PROFILE,
     onProgress?: ProgressCallback,
+    options: IndexingRunOptions = {},
   ) {
     this.requireReadyProvider();
 
@@ -44,6 +56,7 @@ export class VaultIndexer {
 
     try {
         for (const file of markdownFiles) {
+          throwIfIndexingCancelled(options.signal);
           current++;
           if (onProgress) onProgress(current, total);
 
@@ -76,8 +89,9 @@ export class VaultIndexer {
                 await this.store.flush();
             }
 
-            await this.delayAfterEmbeddingRequest();
+            await this.delayAfterEmbeddingRequest(options.signal);
           } catch (e: any) {
+            if (e instanceof IndexingCancelledError) throw e;
             console.error(`Failed to index ${file.path}:`, e);
             
             // On 429 or quota errors, we MUST save and stop to prevent data loss
@@ -101,6 +115,7 @@ export class VaultIndexer {
   async indexMissingNotes(
     profileId: EmbeddingProfileId = DEFAULT_EMBEDDING_PROFILE,
     onProgress?: ProgressCallback,
+    options: IndexingRunOptions = {},
   ): Promise<{
     totalCount: number;
     indexedCount: number;
@@ -115,13 +130,14 @@ export class VaultIndexer {
 
     try {
       for (const file of missingFiles) {
+        throwIfIndexingCancelled(options.signal);
         current++;
         if (onProgress) onProgress(current, missingFiles.length);
 
-        await this.indexFile(file, profileId);
+        await this.indexFile(file, profileId, options);
 
         if (current < missingFiles.length) {
-          await this.delayAfterEmbeddingRequest();
+          await this.delayAfterEmbeddingRequest(options.signal);
         }
       }
     } finally {
@@ -135,8 +151,13 @@ export class VaultIndexer {
     };
   }
 
-  async indexFile(file: TFile, profileId: EmbeddingProfileId = DEFAULT_EMBEDDING_PROFILE) {
+  async indexFile(
+    file: TFile,
+    profileId: EmbeddingProfileId = DEFAULT_EMBEDDING_PROFILE,
+    options: IndexingRunOptions = {},
+  ) {
       try {
+          throwIfIndexingCancelled(options.signal);
           const markdown = await this.app.vault.read(file);
           const built = buildNoteRepresentation({
               path: file.path,
@@ -150,6 +171,7 @@ export class VaultIndexer {
 
           await this.store.upsertNote(this.makeRecord(file, rawContentHash, built, vector));
       } catch (e) {
+          if (e instanceof IndexingCancelledError) throw e;
           console.error(`Failed to index single file ${file.path}:`, e);
           throw e;
       }
@@ -161,10 +183,12 @@ export class VaultIndexer {
     }
   }
 
-  private async delayAfterEmbeddingRequest() {
+  private async delayAfterEmbeddingRequest(signal?: AbortSignal) {
+    throwIfIndexingCancelled(signal);
     if (this.embeddingRequestDelayMs > 0) {
-      await this.sleep(this.embeddingRequestDelayMs);
+      await sleepWithAbort(this.sleep(this.embeddingRequestDelayMs), signal);
     }
+    throwIfIndexingCancelled(signal);
   }
 
   private isRecordCurrent(
@@ -211,4 +235,21 @@ export class VaultIndexer {
 function normalizeDelayMs(value: number): number {
   if (!Number.isFinite(value)) return 0;
   return Math.max(0, Math.floor(value));
+}
+
+function throwIfIndexingCancelled(signal?: AbortSignal): void {
+  if (signal?.aborted) throw new IndexingCancelledError();
+}
+
+function sleepWithAbort(promise: Promise<void>, signal?: AbortSignal): Promise<void> {
+  if (!signal) return promise;
+  throwIfIndexingCancelled(signal);
+
+  return new Promise((resolve, reject) => {
+    const onAbort = () => reject(new IndexingCancelledError());
+    signal.addEventListener("abort", onAbort, { once: true });
+    promise
+      .then(resolve, reject)
+      .finally(() => signal.removeEventListener("abort", onAbort));
+  });
 }

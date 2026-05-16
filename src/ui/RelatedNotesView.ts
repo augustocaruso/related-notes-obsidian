@@ -126,6 +126,17 @@ export class RelatedNotesView extends ItemView {
     titleRow.createEl("h4", { text: "Related Notes", cls: "related-notes-title" });
 
     const toolbar = top.createDiv({ cls: "related-notes-toolbar" });
+    if (this.plugin.isIndexing()) {
+      const tooltip = this.plugin.isIndexingStopRequested()
+        ? "Stopping indexing"
+        : "Stop indexing";
+      const stopButton = this.addIconButton(toolbar, "square", tooltip, () => this.plugin.stopIndexing());
+      stopButton.extraSettingsEl.addClass("related-notes-stop-indexing-button");
+      if (this.plugin.isIndexingStopRequested()) {
+        stopButton.extraSettingsEl.addClass("is-stopping");
+        stopButton.extraSettingsEl.setAttr("aria-disabled", "true");
+      }
+    }
     this.addIconButton(toolbar, "refresh-cw", "Refresh results", () => this.updateView());
     this.addIconButton(toolbar, "more-horizontal", "More actions", (event) => this.openOverflowMenu(event));
     this.addIconButton(toolbar, "settings", "Open settings", () => this.plugin.openSettings());
@@ -137,6 +148,16 @@ export class RelatedNotesView extends ItemView {
 
   private openOverflowMenu(event: MouseEvent | undefined) {
     const menu = new Menu();
+    if (this.plugin.isIndexing()) {
+      menu.addItem((item) =>
+        item
+          .setTitle(this.plugin.isIndexingStopRequested() ? "Stopping indexing" : "Stop indexing")
+          .setIcon("square")
+          .setDisabled(this.plugin.isIndexingStopRequested())
+          .onClick(() => this.plugin.stopIndexing())
+      );
+      menu.addSeparator();
+    }
 	    menu.addItem((item) =>
 	      item
 	        .setTitle("Index current note")
@@ -220,7 +241,9 @@ export class RelatedNotesView extends ItemView {
         },
         secondaryAction: {
           label: "Index missing notes",
-          onClick: () => this.plugin.indexMissingNotes(missingProfile),
+          onClick: async () => {
+            await this.plugin.indexMissingNotes(missingProfile);
+          },
         },
       });
       return;
@@ -256,7 +279,12 @@ export class RelatedNotesView extends ItemView {
         title: `This note is not indexed for ${getEmbeddingProfileLabel(profileId)}`,
         description: "Index this note now, or index missing notes for this profile.",
         primaryAction: { label: "Index this note", onClick: () => this.plugin.indexCurrentFile(this.currentFile, profileId) },
-        secondaryAction: { label: "Index missing notes", onClick: () => this.plugin.indexMissingNotes(profileId) },
+        secondaryAction: {
+          label: "Index missing notes",
+          onClick: async () => {
+            await this.plugin.indexMissingNotes(profileId);
+          },
+        },
       });
       return true;
     }

@@ -7164,6 +7164,12 @@ function normalizeCleanWhitespace(text) {
 }
 
 // src/indexing/VaultIndexer.ts
+var IndexingCancelledError = class extends Error {
+  constructor() {
+    super("Indexing cancelled");
+    this.name = "IndexingCancelledError";
+  }
+};
 var VaultIndexer = class {
   constructor(app, store, embeddingProvider, options = {}) {
     this.app = app;
@@ -7177,7 +7183,7 @@ var VaultIndexer = class {
   setEmbeddingRequestDelayMs(delayMs) {
     this.embeddingRequestDelayMs = normalizeDelayMs2(delayMs);
   }
-  async reindexVault(profileId = DEFAULT_EMBEDDING_PROFILE, onProgress) {
+  async reindexVault(profileId = DEFAULT_EMBEDDING_PROFILE, onProgress, options = {}) {
     this.requireReadyProvider();
     const markdownFiles = this.app.vault.getMarkdownFiles();
     const total = markdownFiles.length;
@@ -7186,6 +7192,7 @@ var VaultIndexer = class {
     const indexedPaths = new Set(await this.store.listIndexedPaths(profileId));
     try {
       for (const file of markdownFiles) {
+        throwIfIndexingCancelled(options.signal);
         current++;
         if (onProgress)
           onProgress(current, total);
@@ -7210,8 +7217,10 @@ var VaultIndexer = class {
           if (processedInThisBatch % 10 === 0) {
             await this.store.flush();
           }
-          await this.delayAfterEmbeddingRequest();
+          await this.delayAfterEmbeddingRequest(options.signal);
         } catch (e) {
+          if (e instanceof IndexingCancelledError)
+            throw e;
           console.error(`Failed to index ${file.path}:`, e);
           if (e.message?.includes("429") || e.message?.includes("quota") || e.message?.includes("API key is missing")) {
             console.log("[VaultIndexer] Quota or Rate Limit hit. Flushing store...");
@@ -7227,7 +7236,7 @@ var VaultIndexer = class {
       await this.store.flush();
     }
   }
-  async indexMissingNotes(profileId = DEFAULT_EMBEDDING_PROFILE, onProgress) {
+  async indexMissingNotes(profileId = DEFAULT_EMBEDDING_PROFILE, onProgress, options = {}) {
     this.requireReadyProvider();
     const markdownFiles = this.app.vault.getMarkdownFiles();
     const indexedPaths = new Set(await this.store.listIndexedPaths(profileId));
@@ -7235,12 +7244,13 @@ var VaultIndexer = class {
     let current = 0;
     try {
       for (const file of missingFiles) {
+        throwIfIndexingCancelled(options.signal);
         current++;
         if (onProgress)
           onProgress(current, missingFiles.length);
-        await this.indexFile(file, profileId);
+        await this.indexFile(file, profileId, options);
         if (current < missingFiles.length) {
-          await this.delayAfterEmbeddingRequest();
+          await this.delayAfterEmbeddingRequest(options.signal);
         }
       }
     } finally {
@@ -7252,8 +7262,9 @@ var VaultIndexer = class {
       skippedCount: markdownFiles.length - missingFiles.length
     };
   }
-  async indexFile(file, profileId = DEFAULT_EMBEDDING_PROFILE) {
+  async indexFile(file, profileId = DEFAULT_EMBEDDING_PROFILE, options = {}) {
     try {
+      throwIfIndexingCancelled(options.signal);
       const markdown = await this.app.vault.read(file);
       const built = buildNoteRepresentation({
         path: file.path,
@@ -7265,6 +7276,8 @@ var VaultIndexer = class {
       const vector = await this.embeddingProvider.embed(built.text);
       await this.store.upsertNote(this.makeRecord(file, rawContentHash, built, vector));
     } catch (e) {
+      if (e instanceof IndexingCancelledError)
+        throw e;
       console.error(`Failed to index single file ${file.path}:`, e);
       throw e;
     }
@@ -7274,10 +7287,12 @@ var VaultIndexer = class {
       throw new Error("Gemini API key is missing. Please add it in settings.");
     }
   }
-  async delayAfterEmbeddingRequest() {
+  async delayAfterEmbeddingRequest(signal) {
+    throwIfIndexingCancelled(signal);
     if (this.embeddingRequestDelayMs > 0) {
-      await this.sleep(this.embeddingRequestDelayMs);
+      await sleepWithAbort(this.sleep(this.embeddingRequestDelayMs), signal);
     }
+    throwIfIndexingCancelled(signal);
   }
   isRecordCurrent(record, representationHash, profileId, profileVersion) {
     return record.representationHash === representationHash && record.embeddingModel === this.embeddingProvider.model && record.embeddingProfile === profileId && record.embeddingProfileVersion === profileVersion;
@@ -7304,6 +7319,20 @@ function normalizeDelayMs2(value) {
   if (!Number.isFinite(value))
     return 0;
   return Math.max(0, Math.floor(value));
+}
+function throwIfIndexingCancelled(signal) {
+  if (signal?.aborted)
+    throw new IndexingCancelledError();
+}
+function sleepWithAbort(promise, signal) {
+  if (!signal)
+    return promise;
+  throwIfIndexingCancelled(signal);
+  return new Promise((resolve, reject) => {
+    const onAbort = () => reject(new IndexingCancelledError());
+    signal.addEventListener("abort", onAbort, { once: true });
+    promise.then(resolve, reject).finally(() => signal.removeEventListener("abort", onAbort));
+  });
 }
 
 // src/related/RelatedNotesService.ts
@@ -7490,6 +7519,15 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
     (0, import_obsidian2.setIcon)(titleIcon, "links-coming-in");
     titleRow.createEl("h4", { text: "Related Notes", cls: "related-notes-title" });
     const toolbar = top.createDiv({ cls: "related-notes-toolbar" });
+    if (this.plugin.isIndexing()) {
+      const tooltip = this.plugin.isIndexingStopRequested() ? "Stopping indexing" : "Stop indexing";
+      const stopButton = this.addIconButton(toolbar, "square", tooltip, () => this.plugin.stopIndexing());
+      stopButton.extraSettingsEl.addClass("related-notes-stop-indexing-button");
+      if (this.plugin.isIndexingStopRequested()) {
+        stopButton.extraSettingsEl.addClass("is-stopping");
+        stopButton.extraSettingsEl.setAttr("aria-disabled", "true");
+      }
+    }
     this.addIconButton(toolbar, "refresh-cw", "Refresh results", () => this.updateView());
     this.addIconButton(toolbar, "more-horizontal", "More actions", (event) => this.openOverflowMenu(event));
     this.addIconButton(toolbar, "settings", "Open settings", () => this.plugin.openSettings());
@@ -7499,6 +7537,12 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
   }
   openOverflowMenu(event) {
     const menu = new import_obsidian2.Menu();
+    if (this.plugin.isIndexing()) {
+      menu.addItem(
+        (item) => item.setTitle(this.plugin.isIndexingStopRequested() ? "Stopping indexing" : "Stop indexing").setIcon("square").setDisabled(this.plugin.isIndexingStopRequested()).onClick(() => this.plugin.stopIndexing())
+      );
+      menu.addSeparator();
+    }
     menu.addItem(
       (item) => item.setTitle("Index current note").setIcon("scan-search").setDisabled(!this.currentFile).onClick(() => this.plugin.indexCurrentFile(this.currentFile, this.plugin.settings.defaultEmbeddingProfile))
     );
@@ -7564,7 +7608,9 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
         },
         secondaryAction: {
           label: "Index missing notes",
-          onClick: () => this.plugin.indexMissingNotes(missingProfile)
+          onClick: async () => {
+            await this.plugin.indexMissingNotes(missingProfile);
+          }
         }
       });
       return;
@@ -7593,7 +7639,12 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
         title: `This note is not indexed for ${getEmbeddingProfileLabel(profileId)}`,
         description: "Index this note now, or index missing notes for this profile.",
         primaryAction: { label: "Index this note", onClick: () => this.plugin.indexCurrentFile(this.currentFile, profileId) },
-        secondaryAction: { label: "Index missing notes", onClick: () => this.plugin.indexMissingNotes(profileId) }
+        secondaryAction: {
+          label: "Index missing notes",
+          onClick: async () => {
+            await this.plugin.indexMissingNotes(profileId);
+          }
+        }
       });
       return true;
     }
@@ -7948,6 +7999,9 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
   service;
   embeddingProvider;
   statusBarItem;
+  activeIndexingController = null;
+  activeIndexingLabel = "";
+  indexingCancelRequested = false;
   async onload() {
     await this.loadSettings();
     this.statusBarItem = this.addStatusBarItem();
@@ -8107,13 +8161,16 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
   }
   async reindexVault(profileId = this.settings.defaultEmbeddingProfile) {
     const profileLabel = getEmbeddingProfileLabel(profileId);
+    const controller = this.beginIndexingRun(`${profileLabel} reindex`);
+    if (!controller)
+      return;
     new import_obsidian3.Notice(`Indexing vault for ${profileLabel}... please wait.`);
     this.updateStatusBar("indexing", `Starting ${profileLabel}`);
     try {
       await this.indexer.reindexVault(profileId, (current, total) => {
         const pct = current / total;
         this.updateStatusBar("indexing", `${profileLabel} ${current}/${total}`, pct);
-      });
+      }, { signal: controller.signal });
       this.updateStatusBar("complete");
       new import_obsidian3.Notice(`${profileLabel} vault indexing complete!`);
       this.updateSidebar(this.app.workspace.getActiveFile());
@@ -8121,6 +8178,12 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
         await this.exportWorkbenchRelatedNotes(profileId);
       }
     } catch (e) {
+      if (e instanceof IndexingCancelledError) {
+        this.updateStatusBar("idle");
+        new import_obsidian3.Notice(`${profileLabel} indexing stopped.`);
+        console.log("[RelatedNotes] Indexing stopped by user.");
+        return;
+      }
       let msg = "Indexing Failed";
       if (e.message?.includes("quota")) {
         msg = "Daily Quota Reached";
@@ -8130,6 +8193,8 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       this.updateStatusBar("error", msg);
       new import_obsidian3.Notice(`Indexing paused: ${msg}. Progress saved.`);
       console.error(e);
+    } finally {
+      this.finishIndexingRun(controller);
     }
   }
   async indexCurrentFile(file, profileId = this.settings.defaultEmbeddingProfile) {
@@ -8139,9 +8204,12 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       return;
     }
     const profileLabel = getEmbeddingProfileLabel(profileId);
+    const controller = this.beginIndexingRun(`${profileLabel} current note`);
+    if (!controller)
+      return;
     this.updateStatusBar("indexing", `Indexing ${profileLabel}`, 0);
     try {
-      await this.indexer.indexFile(target, profileId);
+      await this.indexer.indexFile(target, profileId, { signal: controller.signal });
       await this.store.flush();
       this.updateStatusBar("complete");
       this.updateSidebar(target);
@@ -8150,21 +8218,32 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       }
       new import_obsidian3.Notice(`Indexed ${target.basename} for ${profileLabel}`);
     } catch (e) {
+      if (e instanceof IndexingCancelledError) {
+        this.updateStatusBar("idle");
+        new import_obsidian3.Notice(`${profileLabel} indexing stopped.`);
+        console.log("[RelatedNotes] Current-note indexing stopped by user.");
+        return;
+      }
       const msg = e.message?.includes("429") || e.message?.includes("quota") ? "Rate limit reached" : "Indexing failed";
       this.updateStatusBar("error", msg);
       new import_obsidian3.Notice(msg);
       console.error(e);
+    } finally {
+      this.finishIndexingRun(controller);
     }
   }
   async indexMissingNotes(profileId = this.settings.defaultEmbeddingProfile) {
     const profileLabel = getEmbeddingProfileLabel(profileId);
+    const controller = this.beginIndexingRun(`${profileLabel} missing notes`);
+    if (!controller)
+      return false;
     new import_obsidian3.Notice(`Indexing missing notes for ${profileLabel}...`);
     this.updateStatusBar("indexing", `Finding missing ${profileLabel}`, 0);
     try {
       const result = await this.indexer.indexMissingNotes(profileId, (current, total) => {
         const pct = total === 0 ? 1 : current / total;
         this.updateStatusBar("indexing", `${profileLabel} ${current}/${total}`, pct);
-      });
+      }, { signal: controller.signal });
       this.updateStatusBar("complete");
       this.updateSidebar(this.app.workspace.getActiveFile());
       if (result.indexedCount === 0) {
@@ -8175,16 +8254,28 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       if (profileId === this.settings.defaultEmbeddingProfile && result.indexedCount > 0) {
         await this.exportWorkbenchRelatedNotes(profileId);
       }
+      return true;
     } catch (e) {
+      if (e instanceof IndexingCancelledError) {
+        this.updateStatusBar("idle");
+        new import_obsidian3.Notice(`${profileLabel} indexing stopped.`);
+        console.log("[RelatedNotes] Missing-note indexing stopped by user.");
+        return false;
+      }
       const msg = e.message?.includes("429") || e.message?.includes("quota") ? "Rate limit reached" : "Missing-note indexing failed";
       this.updateStatusBar("error", msg);
       new import_obsidian3.Notice(msg);
       console.error(e);
+      return false;
+    } finally {
+      this.finishIndexingRun(controller);
     }
   }
   async indexAllStoredProfiles() {
     for (const profileId of this.settings.storedEmbeddingProfiles) {
-      await this.indexMissingNotes(profileId);
+      const completed = await this.indexMissingNotes(profileId);
+      if (!completed)
+        break;
     }
   }
   async clearDefaultProfileIndex() {
@@ -8223,6 +8314,45 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       console.error("[RelatedNotes] Workbench export failed:", e);
       new import_obsidian3.Notice("Workbench export failed. See console for details.");
     }
+  }
+  isIndexing() {
+    return Boolean(this.activeIndexingController);
+  }
+  isIndexingStopRequested() {
+    return this.indexingCancelRequested;
+  }
+  stopIndexing() {
+    if (!this.activeIndexingController) {
+      new import_obsidian3.Notice("No indexing run is active.");
+      return;
+    }
+    if (!this.indexingCancelRequested) {
+      this.indexingCancelRequested = true;
+      this.updateStatusBar("indexing", "Stopping after current note");
+      new import_obsidian3.Notice("Stopping indexing after the current note...");
+      this.updateSidebar(this.app.workspace.getActiveFile());
+    }
+    this.activeIndexingController.abort();
+  }
+  beginIndexingRun(label) {
+    if (this.activeIndexingController) {
+      new import_obsidian3.Notice(`Indexing is already running: ${this.activeIndexingLabel}. Stop it first to start another run.`);
+      return null;
+    }
+    const controller = new AbortController();
+    this.activeIndexingController = controller;
+    this.activeIndexingLabel = label;
+    this.indexingCancelRequested = false;
+    this.updateSidebar(this.app.workspace.getActiveFile());
+    return controller;
+  }
+  finishIndexingRun(controller) {
+    if (this.activeIndexingController !== controller)
+      return;
+    this.activeIndexingController = null;
+    this.activeIndexingLabel = "";
+    this.indexingCancelRequested = false;
+    this.updateSidebar(this.app.workspace.getActiveFile());
   }
 };
 /*! Bundled license information:
