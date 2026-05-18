@@ -173,9 +173,11 @@ export class RelatedNotesView extends ItemView {
     );
     menu.addItem((item) =>
       item
-        .setTitle("Reindex vault")
-        .setIcon("database-zap")
-        .onClick(() => this.plugin.reindexVault())
+        .setTitle("Update index")
+        .setIcon("refresh-cw")
+        .onClick(async () => {
+          await this.plugin.updateIndex();
+        })
     );
 
     if (event) {
@@ -293,9 +295,14 @@ export class RelatedNotesView extends ItemView {
       this.renderState(container, {
         icon: "alert-triangle",
         title: "Could not load related notes",
-        description: "Try refreshing the panel or rebuilding the index.",
+        description: "Try refreshing the panel or updating the index.",
         primaryAction: { label: "Retry", onClick: () => this.updateView() },
-        secondaryAction: { label: "Reindex profile", onClick: () => this.plugin.reindexVault(profileId) },
+        secondaryAction: {
+          label: "Update index",
+          onClick: async () => {
+            await this.plugin.updateIndex(profileId);
+          },
+        },
       });
       return true;
     }

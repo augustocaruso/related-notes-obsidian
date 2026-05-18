@@ -62,15 +62,15 @@ export default class RelatedNotesPlugin extends Plugin {
     });
 
     this.addCommand({
-      id: "reindex-vault",
-      name: "Reindex vault",
-      callback: () => this.reindexVault(),
-    });
-
-    this.addCommand({
       id: "index-missing-notes",
       name: "Index missing notes only",
       callback: () => this.indexMissingNotes(),
+    });
+
+    this.addCommand({
+      id: "update-index",
+      name: "Update index (new and changed notes)",
+      callback: () => this.updateIndex(),
     });
 
     this.addCommand({
@@ -214,30 +214,31 @@ export default class RelatedNotesPlugin extends Plugin {
     }
   }
 
-	  async reindexVault(profileId: EmbeddingProfileId = this.settings.defaultEmbeddingProfile) {
+	  async updateIndex(profileId: EmbeddingProfileId = this.settings.defaultEmbeddingProfile): Promise<boolean> {
 	    const profileLabel = getEmbeddingProfileLabel(profileId);
-	    const controller = this.beginIndexingRun(`${profileLabel} reindex`);
-	    if (!controller) return;
-	    new Notice(`Indexing vault for ${profileLabel}... please wait.`);
-	    this.updateStatusBar("indexing", `Starting ${profileLabel}`);
+	    const controller = this.beginIndexingRun(`${profileLabel} update`);
+	    if (!controller) return false;
+	    new Notice(`Updating index for ${profileLabel}...`);
+	    this.updateStatusBar("indexing", `Updating ${profileLabel}`);
 
 	    try {
-	        await this.indexer.reindexVault(profileId, (current, total) => {
+	        await this.indexer.updateIndex(profileId, (current, total) => {
 	            const pct = current / total;
 	            this.updateStatusBar("indexing", `${profileLabel} ${current}/${total}`, pct);
 	        }, { signal: controller.signal });
 	        this.updateStatusBar("complete");
-	        new Notice(`${profileLabel} vault indexing complete!`);
+	        new Notice(`${profileLabel} index update complete.`);
 	        this.updateSidebar(this.app.workspace.getActiveFile());
 	        if (profileId === this.settings.defaultEmbeddingProfile) {
 	          await this.exportWorkbenchRelatedNotes(profileId);
 	        }
+          return true;
     } catch (e: any) {
         if (e instanceof IndexingCancelledError) {
           this.updateStatusBar("idle");
           new Notice(`${profileLabel} indexing stopped.`);
           console.log("[RelatedNotes] Indexing stopped by user.");
-          return;
+          return false;
         }
         let msg = "Indexing Failed";
         if (e.message?.includes("quota")) {
@@ -249,6 +250,7 @@ export default class RelatedNotesPlugin extends Plugin {
         this.updateStatusBar("error", msg);
         new Notice(`Indexing paused: ${msg}. Progress saved.`);
         console.error(e);
+        return false;
     } finally {
         this.finishIndexingRun(controller);
     }
@@ -338,9 +340,9 @@ export default class RelatedNotesPlugin extends Plugin {
 		  }
 	  }
 
-		  async indexAllStoredProfiles() {
+		  async updateAllStoredProfiles() {
 	    for (const profileId of this.settings.storedEmbeddingProfiles) {
-	      const completed = await this.indexMissingNotes(profileId);
+	      const completed = await this.updateIndex(profileId);
 	      if (!completed) break;
 	    }
 	  }

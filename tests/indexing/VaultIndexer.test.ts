@@ -126,7 +126,7 @@ test("indexMissingNotes treats missing notes per profile instead of per path glo
   assert.equal(result.indexedCount, 1);
 });
 
-test("reindexVault skips clean_v1 embedding when only raw markdown scaffolding changed", async () => {
+test("updateIndex skips clean_v1 embedding when only raw markdown scaffolding changed", async () => {
   const oldMarkdown = `---
 tags:
   - old
@@ -207,13 +207,13 @@ Texto principal.
   };
 
   const indexer = new VaultIndexer(app as any, store as any, embeddingProvider as any);
-  await indexer.reindexVault("clean_v1");
+  await indexer.updateIndex("clean_v1");
 
   assert.equal(embedCalls, 0);
   assert.equal(upsertCalls, 0);
 });
 
-test("reindexVault skips clean_v1 embedding when only TOML frontmatter and Chat Original footer changed", async () => {
+test("updateIndex skips clean_v1 embedding when only TOML frontmatter and Chat Original footer changed", async () => {
   const oldMarkdown = `+++
 tags = ["old"]
 +++
@@ -290,13 +290,13 @@ Texto principal.
   };
 
   const indexer = new VaultIndexer(app as any, store as any, embeddingProvider as any);
-  await indexer.reindexVault("clean_v1");
+  await indexer.updateIndex("clean_v1");
 
   assert.equal(embedCalls, 0);
   assert.equal(upsertCalls, 0);
 });
 
-test("reindexVault stops before the next note when cancellation is requested", async () => {
+test("updateIndex stops before the next note when cancellation is requested", async () => {
   const files = [makeFile("A.md", "# A"), makeFile("B.md", "# B"), makeFile("C.md", "# C")];
   const controller = new AbortController();
   const embedded: string[] = [];
@@ -332,7 +332,7 @@ test("reindexVault stops before the next note when cancellation is requested", a
   const indexer = new VaultIndexer(app as any, store as any, embeddingProvider as any);
 
   await assert.rejects(
-    () => indexer.reindexVault("clean_v1", undefined, { signal: controller.signal }),
+    () => indexer.updateIndex("clean_v1", undefined, { signal: controller.signal }),
     IndexingCancelledError,
   );
 

@@ -176,20 +176,20 @@ export class RelatedNotesSettingTab extends PluginSettingTab {
 	      );
 
     new Setting(containerEl)
-      .setName("Reindex Vault")
-      .setDesc("Scan all notes and update the semantic index.")
+      .setName("Update index")
+      .setDesc("Scan notes, embed only new and changed notes, and remove deleted note records.")
       .addButton((btn) =>
-        btn.setButtonText("Reindex Now").onClick(async () => {
-          await this.plugin.reindexVault();
+        btn.setButtonText("Update Index").onClick(async () => {
+          await this.plugin.updateIndex();
         })
 	      );
 
 	    new Setting(containerEl)
-	      .setName("Index all stored profiles")
-	      .setDesc("Runs missing-note indexing for every stored profile, including Raw v1 if enabled.")
+	      .setName("Update all stored profiles")
+	      .setDesc("Scans new and changed notes for every stored profile, including Raw v1 if enabled.")
 	      .addButton((btn) =>
-	        btn.setButtonText("Index Stored Profiles").onClick(async () => {
-	          await this.plugin.indexAllStoredProfiles();
+	        btn.setButtonText("Update Stored Profiles").onClick(async () => {
+	          await this.plugin.updateAllStoredProfiles();
 	        })
 	      );
 

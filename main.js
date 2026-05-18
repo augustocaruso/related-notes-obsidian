@@ -6784,14 +6784,14 @@ var RelatedNotesSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.indexMissingNotes();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Reindex Vault").setDesc("Scan all notes and update the semantic index.").addButton(
-      (btn) => btn.setButtonText("Reindex Now").onClick(async () => {
-        await this.plugin.reindexVault();
+    new import_obsidian.Setting(containerEl).setName("Update index").setDesc("Scan notes, embed only new and changed notes, and remove deleted note records.").addButton(
+      (btn) => btn.setButtonText("Update Index").onClick(async () => {
+        await this.plugin.updateIndex();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Index all stored profiles").setDesc("Runs missing-note indexing for every stored profile, including Raw v1 if enabled.").addButton(
-      (btn) => btn.setButtonText("Index Stored Profiles").onClick(async () => {
-        await this.plugin.indexAllStoredProfiles();
+    new import_obsidian.Setting(containerEl).setName("Update all stored profiles").setDesc("Scans new and changed notes for every stored profile, including Raw v1 if enabled.").addButton(
+      (btn) => btn.setButtonText("Update Stored Profiles").onClick(async () => {
+        await this.plugin.updateAllStoredProfiles();
       })
     );
     new import_obsidian.Setting(containerEl).setName("Clear default profile index").setDesc("Remove local semantic data for the default profile only.").addButton(
@@ -7183,7 +7183,7 @@ var VaultIndexer = class {
   setEmbeddingRequestDelayMs(delayMs) {
     this.embeddingRequestDelayMs = normalizeDelayMs2(delayMs);
   }
-  async reindexVault(profileId = DEFAULT_EMBEDDING_PROFILE, onProgress, options = {}) {
+  async updateIndex(profileId = DEFAULT_EMBEDDING_PROFILE, onProgress, options = {}) {
     this.requireReadyProvider();
     const markdownFiles = this.app.vault.getMarkdownFiles();
     const total = markdownFiles.length;
@@ -7550,7 +7550,9 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
       (item) => item.setTitle("Index missing notes").setIcon("list-plus").onClick(() => this.plugin.indexMissingNotes())
     );
     menu.addItem(
-      (item) => item.setTitle("Reindex vault").setIcon("database-zap").onClick(() => this.plugin.reindexVault())
+      (item) => item.setTitle("Update index").setIcon("refresh-cw").onClick(async () => {
+        await this.plugin.updateIndex();
+      })
     );
     if (event) {
       menu.showAtMouseEvent(event);
@@ -7652,9 +7654,14 @@ var RelatedNotesView = class extends import_obsidian2.ItemView {
       this.renderState(container, {
         icon: "alert-triangle",
         title: "Could not load related notes",
-        description: "Try refreshing the panel or rebuilding the index.",
+        description: "Try refreshing the panel or updating the index.",
         primaryAction: { label: "Retry", onClick: () => this.updateView() },
-        secondaryAction: { label: "Reindex profile", onClick: () => this.plugin.reindexVault(profileId) }
+        secondaryAction: {
+          label: "Update index",
+          onClick: async () => {
+            await this.plugin.updateIndex(profileId);
+          }
+        }
       });
       return true;
     }
@@ -8029,14 +8036,14 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       callback: () => this.activateView()
     });
     this.addCommand({
-      id: "reindex-vault",
-      name: "Reindex vault",
-      callback: () => this.reindexVault()
-    });
-    this.addCommand({
       id: "index-missing-notes",
       name: "Index missing notes only",
       callback: () => this.indexMissingNotes()
+    });
+    this.addCommand({
+      id: "update-index",
+      name: "Update index (new and changed notes)",
+      callback: () => this.updateIndex()
     });
     this.addCommand({
       id: "export-workbench-related-notes",
@@ -8159,30 +8166,31 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       }
     }
   }
-  async reindexVault(profileId = this.settings.defaultEmbeddingProfile) {
+  async updateIndex(profileId = this.settings.defaultEmbeddingProfile) {
     const profileLabel = getEmbeddingProfileLabel(profileId);
-    const controller = this.beginIndexingRun(`${profileLabel} reindex`);
+    const controller = this.beginIndexingRun(`${profileLabel} update`);
     if (!controller)
-      return;
-    new import_obsidian3.Notice(`Indexing vault for ${profileLabel}... please wait.`);
-    this.updateStatusBar("indexing", `Starting ${profileLabel}`);
+      return false;
+    new import_obsidian3.Notice(`Updating index for ${profileLabel}...`);
+    this.updateStatusBar("indexing", `Updating ${profileLabel}`);
     try {
-      await this.indexer.reindexVault(profileId, (current, total) => {
+      await this.indexer.updateIndex(profileId, (current, total) => {
         const pct = current / total;
         this.updateStatusBar("indexing", `${profileLabel} ${current}/${total}`, pct);
       }, { signal: controller.signal });
       this.updateStatusBar("complete");
-      new import_obsidian3.Notice(`${profileLabel} vault indexing complete!`);
+      new import_obsidian3.Notice(`${profileLabel} index update complete.`);
       this.updateSidebar(this.app.workspace.getActiveFile());
       if (profileId === this.settings.defaultEmbeddingProfile) {
         await this.exportWorkbenchRelatedNotes(profileId);
       }
+      return true;
     } catch (e) {
       if (e instanceof IndexingCancelledError) {
         this.updateStatusBar("idle");
         new import_obsidian3.Notice(`${profileLabel} indexing stopped.`);
         console.log("[RelatedNotes] Indexing stopped by user.");
-        return;
+        return false;
       }
       let msg = "Indexing Failed";
       if (e.message?.includes("quota")) {
@@ -8193,6 +8201,7 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       this.updateStatusBar("error", msg);
       new import_obsidian3.Notice(`Indexing paused: ${msg}. Progress saved.`);
       console.error(e);
+      return false;
     } finally {
       this.finishIndexingRun(controller);
     }
@@ -8271,9 +8280,9 @@ var RelatedNotesPlugin = class extends import_obsidian3.Plugin {
       this.finishIndexingRun(controller);
     }
   }
-  async indexAllStoredProfiles() {
+  async updateAllStoredProfiles() {
     for (const profileId of this.settings.storedEmbeddingProfiles) {
-      const completed = await this.indexMissingNotes(profileId);
+      const completed = await this.updateIndex(profileId);
       if (!completed)
         break;
     }

@@ -30,7 +30,7 @@ BRAT: Add a beta plugin for testing
 augustocaruso/related-notes-obsidian
 ```
 
-5. Choose the latest release, currently `v0.2.0`.
+5. Choose the latest release.
 6. Open **Settings → Community plugins** and enable **Related Notes (Gemini)**.
 
 ### Manual install
@@ -62,10 +62,10 @@ styles.css
 1. Open **Settings → Related Notes (Gemini)**.
 2. Add your Gemini API key.
 3. Keep **Default embedding profile** as `Clean v1` unless you are intentionally comparing profiles.
-4. Run **Index missing notes** from the settings tab or command palette.
+4. Run **Update index** from the settings tab or command palette.
 5. Open the Related Notes sidebar from the ribbon icon or command palette.
 
-For comparison experiments, enable/store `Raw v1` and run **Index all stored profiles**. Normal indexing and Workbench export use only the default profile.
+For comparison experiments, enable/store `Raw v1` and run **Update all stored profiles**. Normal indexing and Workbench export use only the default profile.
 
 ## Development
 
@@ -76,9 +76,9 @@ npm run build
 
 ## Indexing Modes
 
-Use `Related Notes: Index missing notes only` when you only want to embed Markdown notes that are not already present in the local `index.json`. This is the fast path for adding new notes without scanning and hashing every note in the vault.
+Use `Related Notes: Update index (new and changed notes)` for normal maintenance after vault changes. It scans Markdown notes, embeds only new or semantically changed notes, and removes records for deleted notes.
 
-Use `Related Notes: Reindex vault` when you want a full refresh. It scans all Markdown notes and only calls Gemini for notes whose semantic representation changed, but the scan itself still touches every note.
+Use `Related Notes: Index missing notes only` only when you know the vault has gained new notes and existing notes did not change. It only embeds Markdown notes that are absent from the local `index.json`.
 
 The `Gemini request delay` setting controls the optional pause between embedding requests. It defaults to `0 ms`; increase it only if Gemini starts returning rate-limit errors.
 

@@ -40,7 +40,7 @@ export class VaultIndexer {
     this.embeddingRequestDelayMs = normalizeDelayMs(delayMs);
   }
 
-  async reindexVault(
+  async updateIndex(
     profileId: EmbeddingProfileId = DEFAULT_EMBEDDING_PROFILE,
     onProgress?: ProgressCallback,
     options: IndexingRunOptions = {},
