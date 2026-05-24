@@ -5,7 +5,6 @@ import {
   buildWorkbenchExportPayload,
   writeWorkbenchExport,
 } from "../../src/export/WorkbenchExport";
-import { sha256 } from "../../src/indexing/hash";
 
 test("buildWorkbenchExportPayload creates notes and ordered edges without private fields", () => {
   const payload = buildWorkbenchExportPayload({
@@ -69,17 +68,13 @@ test("assertWorkbenchExportIsRedacted rejects private payload keys", () => {
   );
 });
 
-test("writeWorkbenchExport writes redacted vault export with raw markdown hashes and configured limit", async () => {
+test("writeWorkbenchExport writes representation hashes without reading raw markdown", async () => {
   let writtenPath = "";
   let writtenText = "";
   let requestedLimit = 0;
   const files = new Map([
     ["Cardio/HAS.md", { path: "Cardio/HAS.md", basename: "HAS", extension: "md" }],
     ["Nefro/DRC.md", { path: "Nefro/DRC.md", basename: "DRC", extension: "md" }],
-  ]);
-  const markdown = new Map([
-    ["Cardio/HAS.md", "# HAS\n\nTexto cru."],
-    ["Nefro/DRC.md", "# DRC\n\nTexto cru."],
   ]);
   const app = {
     vault: {
@@ -92,7 +87,9 @@ test("writeWorkbenchExport writes redacted vault export with raw markdown hashes
         },
       },
       getAbstractFileByPath: (path: string) => files.get(path),
-      read: async (file: { path: string }) => markdown.get(file.path),
+      read: async () => {
+        throw new Error("raw markdown must not be read while exporting Workbench payload");
+      },
     },
   };
   const plugin = { manifest: { id: "related-notes-obsidian", version: "0.1.0" } };
@@ -101,7 +98,12 @@ test("writeWorkbenchExport writes redacted vault export with raw markdown hashes
       assert.equal(profileId, "clean_v1");
       return ["Cardio/HAS.md", "Nefro/DRC.md"];
     },
-    getNote: async (path: string, profileId: string) => ({ path, embeddingModel: "test-model", embeddingProfile: profileId }),
+    getNote: async (path: string, profileId: string) => ({
+      path,
+      embeddingModel: "test-model",
+      embeddingProfile: profileId,
+      representationHash: path === "Cardio/HAS.md" ? "representation-has" : "representation-drc",
+    }),
   };
   const service = {
     getRelatedNotes: async (path: string, limit: number, profileId: string) => {
@@ -137,7 +139,7 @@ test("writeWorkbenchExport writes redacted vault export with raw markdown hashes
   assert.equal(requestedLimit, 7);
   assert.equal(result.path, ".obsidian/plugins/related-notes-obsidian/medical-notes-export.json");
   assert.equal(writtenPath, result.path);
-  assert.equal(payload.notes[0].content_hash, `sha256:${sha256("# HAS\n\nTexto cru.")}`);
+  assert.equal(payload.notes[0].content_hash, "sha256:representation-has");
   assert.equal(payload.model.embedding_profile_id, "clean_v1");
   assert.deepEqual(payload.edges, [
     {

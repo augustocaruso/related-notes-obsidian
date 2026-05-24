@@ -98,7 +98,7 @@ After successful default-profile indexing, the plugin automatically writes:
 .obsidian/plugins/related-notes-obsidian/medical-notes-export.json
 ```
 
-This file is the stable redacted artifact consumed by Medical Notes Workbench. It contains only the active default profile graph, note paths, titles, raw Markdown SHA-256 hashes, profile metadata, related-note scores, and ranks. It does not contain vectors, previews, API keys, raw Markdown, note bodies, or plugin cache internals.
+This file is the stable redacted artifact consumed by Medical Notes Workbench. It contains only the active default profile graph, note paths, titles, representation SHA-256 hashes for the active embedding profile, profile metadata, related-note scores, and ranks. It does not contain vectors, previews, API keys, raw Markdown, note bodies, raw Markdown hashes, or plugin cache internals.
 
 You can force regeneration from the Obsidian command palette:
 

@@ -5,7 +5,6 @@ import type {
   WorkbenchRelatedNotesExport,
 } from "../types";
 import { DEFAULT_EMBEDDING_PROFILE, EMBEDDING_PROFILES } from "../types";
-import { sha256 } from "../indexing/hash";
 import type { RelatedNotesService } from "../related/RelatedNotesService";
 import type { NoteVectorStore } from "../store/NoteVectorStore";
 import type { App, Plugin, TFile } from "obsidian";
@@ -139,11 +138,15 @@ export async function writeWorkbenchExport(options: WriteWorkbenchExportOptions)
     if (!record) continue;
     if (!embeddingModel) embeddingModel = record.embeddingModel;
 
-    const markdown = await options.app.vault.read(file);
+    const representationHash = record.representationHash || "";
+    if (!representationHash) {
+      throw new Error(`Cannot export Workbench note without representation hash: ${file.path}`);
+    }
+
     notes.push({
       path: file.path,
       title: file.basename,
-      contentHash: `sha256:${sha256(markdown)}`,
+      contentHash: representationHash,
     });
 
     const result = await options.service.getRelatedNotes(file.path, options.limit, profileId);

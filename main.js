@@ -7916,11 +7916,14 @@ async function writeWorkbenchExport(options) {
       continue;
     if (!embeddingModel)
       embeddingModel = record.embeddingModel;
-    const markdown = await options.app.vault.read(file);
+    const representationHash = record.representationHash || "";
+    if (!representationHash) {
+      throw new Error(`Cannot export Workbench note without representation hash: ${file.path}`);
+    }
     notes.push({
       path: file.path,
       title: file.basename,
-      contentHash: `sha256:${sha256(markdown)}`
+      contentHash: representationHash
     });
     const result = await options.service.getRelatedNotes(file.path, options.limit, profileId);
     relatedBySource.set(
